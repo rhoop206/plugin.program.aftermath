@@ -17,7 +17,7 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmcaddon, xbmc, uservar, sys, os, time
+import xbmc, uservar, sys, os
 import wizard as wiz
 
 ADDON_ID       = uservar.ADDON_ID

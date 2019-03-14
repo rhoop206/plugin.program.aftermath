@@ -21,8 +21,7 @@ import xbmc, xbmcgui, os
 import re
 import uservar
 import time
-try:    from sqlite3 import dbapi2 as database
-except: from pysqlite2 import dbapi2 as database
+from sqlite3 import dbapi2 as database
 from datetime import date, timedelta
 from resources.libs import wizard as wiz
 

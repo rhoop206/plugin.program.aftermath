@@ -23,8 +23,7 @@ import urllib2,urllib
 import re
 import uservar
 import fnmatch
-try:    from sqlite3 import dbapi2 as database
-except: from pysqlite2 import dbapi2 as database
+from sqlite3 import dbapi2 as database
 from datetime import date, datetime, timedelta
 from urlparse import urljoin
 from resources.libs import extract, downloader, notify, debridit, traktit, loginit, skinSwitch, uploadLog, yt, speedtest, wizard as wiz

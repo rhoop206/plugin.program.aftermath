@@ -17,11 +17,11 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, os, sys, xbmcvfs, HTMLParser, glob
+import xbmc, xbmcaddon, xbmcgui, sys, xbmcvfs, HTMLParser, glob
 import shutil
 import string
 import random
-import urllib2,urllib
+import urllib2, urllib
 import re
 import downloader
 import extract
@@ -31,8 +31,7 @@ import pyqrcode
 import os
 from shutil import *
 from datetime import date, datetime, timedelta
-try:    from sqlite3 import dbapi2 as database
-except: from pysqlite2 import dbapi2 as database
+from sqlite3 import dbapi2 as database
 
 ADDON_ID       = uservar.ADDON_ID
 ADDONTITLE     = uservar.ADDONTITLE

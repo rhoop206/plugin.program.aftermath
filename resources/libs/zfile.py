@@ -39,6 +39,7 @@ import binascii, cStringIO, stat
 import io
 import re
 import string
+
 try:
     import zlib
     crc32 = zlib.crc32

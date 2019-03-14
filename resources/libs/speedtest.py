@@ -1,16 +1,9 @@
-import os
-import re
-import sys
 import math
-import signal
 import socket
 import timeit
 import threading
 import uservar
-import xbmc
-import xbmcaddon
 import xbmcgui
-import xbmcplugin
 import os
 import sys
 
