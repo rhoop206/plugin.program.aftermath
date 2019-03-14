@@ -17,15 +17,13 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, os, sys, xbmcvfs, glob
-import shutil
-import urllib2,urllib
+import xbmc, xbmcgui, os
 import re
 import uservar
 import time
 try:    from sqlite3 import dbapi2 as database
 except: from pysqlite2 import dbapi2 as database
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from resources.libs import wizard as wiz
 
 ADDON_ID       = uservar.ADDON_ID
@@ -227,7 +225,7 @@ def clearSaved(who, over=False):
 			os.remove(file)
 			wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, TRAKTID[who]['name']),'[COLOR %s]Trakt Data: Removed![/COLOR]' % COLOR2, 2000, TRAKTID[who]['icon'])
 		wiz.setS(TRAKTID[who]['saved'], '')
-	if over == False: wiz.refresh()
+	if not over: wiz.refresh()
 
 def updateTrakt(do, who):
 	file      = TRAKTID[who]['file']
@@ -251,7 +249,7 @@ def updateTrakt(do, who):
 				user = addonid.getSetting(default)
 				wiz.setS(saved, user)
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name), '[COLOR %s]Trakt Data: Saved![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Trakt Data] Unable to Update %s (%s)" % (who, str(e)), xbmc.LOGERROR)
 		else: wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name), '[COLOR %s]Trakt Data: Not Registered![/COLOR]' % COLOR2, 2000, icon)
 	elif do == 'restore':
@@ -265,7 +263,7 @@ def updateTrakt(do, who):
 				user = addonid.getSetting(default)
 				wiz.setS(saved, user)
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name), '[COLOR %s]Trakt: Restored![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Trakt Data] Unable to Restore %s (%s)" % (who, str(e)), xbmc.LOGERROR)
 		#else: wiz.LogNotify(name,'Trakt Data: [COLOR red]Not Found![/COLOR]', 2000, icon)
 	elif do == 'clearaddon':
@@ -282,7 +280,7 @@ def updateTrakt(do, who):
 						else: wiz.log('Removing Line: %s' % line, xbmc.LOGNOTICE)
 				f.close()
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name),'[COLOR %s]Addon Data: Cleared![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Trakt Data] Unable to Clear Addon %s (%s)" % (who, str(e)), xbmc.LOGERROR)
 	wiz.refresh()
 
@@ -293,10 +291,10 @@ def autoUpdate(who):
 				autoUpdate(log)
 	elif TRAKTID[who]:
 		if os.path.exists(TRAKTID[who]['path']):
-			u  = traktUser(who)
+			u = traktUser(who)
 			su = wiz.getS(TRAKTID[who]['saved'])
 			n = TRAKTID[who]['name']
-			if u == None or u == '': return
+			if u is None or u == '': return
 			elif su == '': traktIt('update', who)
 			elif not u == su:
 				if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to save the [COLOR %s]Trakt Data[/COLOR] for [COLOR %s]%s[/COLOR]?" % (COLOR2, COLOR1, COLOR1, n), "Addon: [COLOR springgreen][B]%s[/B][/COLOR]" % u, "Saved:[/COLOR] [COLOR red][B]%s[/B][/COLOR]" % su if not su == '' else 'Saved:[/COLOR] [COLOR red][B]None[/B][/COLOR]', yeslabel="[B][COLOR springgreen]Save Data[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
@@ -328,7 +326,7 @@ def importlist(who):
 def activateTrakt(who):
 	if TRAKTID[who]:
 		if os.path.exists(TRAKTID[who]['path']):
-			act     = TRAKTID[who]['activate']
+			act = TRAKTID[who]['activate']
 			addonid = wiz.addonId(TRAKTID[who]['plugin'])
 			if act == '': addonid.openSettings()
 			else: url = xbmc.executebuiltin(TRAKTID[who]['activate'])
@@ -337,7 +335,7 @@ def activateTrakt(who):
 		wiz.refresh()
 		return
 	check = 0
-	while traktUser(who) == None:
+	while traktUser(who) is None:
 		if check == 30: break
 		check += 1
 		time.sleep(10)

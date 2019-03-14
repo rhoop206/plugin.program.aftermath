@@ -17,15 +17,13 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, os, sys, xbmcvfs, glob
-import shutil
-import urllib2,urllib
+import xbmc, xbmcgui, os
 import re
 import uservar
 import time
 try:    from sqlite3 import dbapi2 as database
 except: from pysqlite2 import dbapi2 as database
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from resources.libs import wizard as wiz
 
 ADDON_ID       = uservar.ADDON_ID
@@ -683,7 +681,7 @@ def clearSaved(who, over=False):
 			os.remove(file)
 			wiz.LogNotify('[COLOR %s]%s[/COLOR]' % (COLOR1, LOGINID[who]['name']), '[COLOR %s]Login Info: Removed![/COLOR]' % COLOR2, 2000, LOGINID[who]['icon'])
 		wiz.setS(LOGINID[who]['saved'], '')
-	if over == False: wiz.refresh()
+	if not over: wiz.refresh()
 
 def updateLogin(do, who):
 	file      = LOGINID[who]['file']
@@ -707,7 +705,7 @@ def updateLogin(do, who):
 				user = addonid.getSetting(default)
 				wiz.setS(saved, user)
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name),'[COLOR %s]Login Data: Saved![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Login Data] Unable to Update %s (%s)" % (who, str(e)), xbmc.LOGERROR)
 		else: wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name),'[COLOR %s]Login Data: Not Registered![/COLOR]' % COLOR2, 2000, icon)
 	elif do == 'restore':
@@ -721,9 +719,8 @@ def updateLogin(do, who):
 				user = addonid.getSetting(default)
 				wiz.setS(saved, user)
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name), '[COLOR %s]Login: Restored![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Login Info] Unable to Restore %s (%s)" % (who, str(e)), xbmc.LOGERROR)
-		#else: wiz.LogNotify(name,'login Data: [COLOR red]Not Found![/COLOR]', 2000, icon)
 	elif do == 'clearaddon':
 		wiz.log('%s SETTINGS: %s' % (name, settings), xbmc.LOGDEBUG)
 		if os.path.exists(settings):
@@ -738,7 +735,7 @@ def updateLogin(do, who):
 						else: wiz.log('Removing Line: %s' % line, xbmc.LOGNOTICE)
 				f.close()
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name),'[COLOR %s]Addon Data: Cleared![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Trakt Data] Unable to Clear Addon %s (%s)" % (who, str(e)), xbmc.LOGERROR)
 	wiz.refresh()
 
@@ -752,7 +749,7 @@ def autoUpdate(who):
 			u  = loginUser(who)
 			su = wiz.getS(LOGINID[who]['saved'])
 			n = LOGINID[who]['name']
-			if u == None or u == '': return
+			if u is None or u == '': return
 			elif su == '': loginIt('update', who)
 			elif not u == su:
 				if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to save the [COLOR %s]Login Info[/COLOR] for [COLOR %s]%s[/COLOR]?" % (COLOR2, COLOR1, COLOR1, n), "Addon: [COLOR springgreen][B]%s[/B][/COLOR]" % u, "Saved:[/COLOR] [COLOR red][B]%s[/B][/COLOR]" % su if not su == '' else 'Saved:[/COLOR] [COLOR red][B]None[/B][/COLOR]', yeslabel="[B][COLOR springgreen]Save Data[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):

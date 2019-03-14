@@ -17,15 +17,13 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, os, sys, xbmcvfs, glob
-import shutil
-import urllib2,urllib
+import xbmc, xbmcgui, os
 import re
 import uservar
 import time
 try:    from sqlite3 import dbapi2 as database
 except: from pysqlite2 import dbapi2 as database
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from resources.libs import wizard as wiz
 
 ADDON_ID       = uservar.ADDON_ID
@@ -240,7 +238,7 @@ def updateDebrid(do, who):
 				user = addonid.getSetting(default)
 				wiz.setS(saved, user)
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name), '[COLOR %s]Debrid Info: Saved![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Debrid Info] Unable to Update %s (%s)" % (who, str(e)), xbmc.LOGERROR)
 		else: wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name), '[COLOR %s]Debrid Info: Not Registered![/COLOR]' % COLOR2, 2000, icon)
 	elif do == 'restore':
@@ -254,7 +252,7 @@ def updateDebrid(do, who):
 				user = addonid.getSetting(default)
 				wiz.setS(saved, user)
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name), '[COLOR %s]Debrid Info: Restored![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Debrid Info] Unable to Restore %s (%s)" % (who, str(e)), xbmc.LOGERROR)
 		#else: wiz.LogNotify(name,'Real Debrid Info: [COLOR red]Not Found![/COLOR]', 2000, icon)
 	elif do == 'clearaddon':
@@ -271,7 +269,7 @@ def updateDebrid(do, who):
 						else: wiz.log('Removing Line: %s' % line, xbmc.LOGNOTICE)
 				f.close()
 				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, name),'[COLOR %s]Addon Data: Cleared![/COLOR]' % COLOR2, 2000, icon)
-			except Exception, e:
+			except Exception as e:
 				wiz.log("[Debrid Info] Unable to Clear Addon %s (%s)" % (who, str(e)), xbmc.LOGERROR)
 	wiz.refresh()
 
@@ -282,10 +280,10 @@ def autoUpdate(who):
 				autoUpdate(log)
 	elif DEBRIDID[who]:
 		if os.path.exists(DEBRIDID[who]['path']):
-			u  = debridUser(who)
+			u = debridUser(who)
 			su = wiz.getS(DEBRIDID[who]['saved'])
 			n = DEBRIDID[who]['name']
-			if u == None or u == '': return
+			if u is None or u == '': return
 			elif su == '': debridIt('update', who)
 			elif not u == su:
 				if DIALOG.yesno("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Would you like to save the [COLOR %s]Debrid Info[/COLOR] for [COLOR %s]%s[/COLOR]?" % (COLOR2, COLOR1, COLOR1, n), "Addon: [COLOR springgreen][B]%s[/B][/COLOR]" % u, "Saved:[/COLOR] [COLOR red][B]%s[/B][/COLOR]" % su if not su == '' else 'Saved:[/COLOR] [COLOR red][B]None[/B][/COLOR]', yeslabel="[B][COLOR %s]Save Debrid[/COLOR][/B]" % COLOR2, nolabel="[B][COLOR %s]No, Cancel[/COLOR][/B]" % COLOR1):
@@ -317,7 +315,7 @@ def importlist(who):
 def activateDebrid(who):
 	if DEBRIDID[who]:
 		if os.path.exists(DEBRIDID[who]['path']):
-			act     = DEBRIDID[who]['activate']
+			act = DEBRIDID[who]['activate']
 			addonid = wiz.addonId(DEBRIDID[who]['plugin'])
 			if act == '': addonid.openSettings()
 			else: url = xbmc.executebuiltin(DEBRIDID[who]['activate'])
@@ -326,7 +324,7 @@ def activateDebrid(who):
 		wiz.refresh()
 		return
 	check = 0
-	while debridUser(who) == None:
+	while debridUser(who) is None:
 		if check == 30: break
 		check += 1
 		time.sleep(10)
