@@ -129,17 +129,17 @@ class Main:
         log    = wiz.Grab_Log(file=True)
         old    = wiz.Grab_Log(file=True, old=True)
         wizard = False if not os.path.exists(WIZLOG) else WIZLOG
-        if log != False:
+        if log:
             if os.path.exists(log): logfiles.append(['log', log])
             else: self.showResult("No log file found")
         else: self.showResult("No log file found")
         if self.oldlog:
-            if old != False:
+            if old:
                 if os.path.exists(old): logfiles.append(['oldlog', old])
                 else: self.showResult("No old log file found")
             else: self.showResult("No old log file found")
         if self.wizlog:
-            if wizard != False:
+            if wizard:
                 logfiles.append(['wizlog', wizard])
             else: self.showResult("No wizard log file found")
         if self.crashlog:
@@ -203,7 +203,7 @@ class Main:
 
         try:
             page = url_opener.open(URL, params)
-        except Exception, e:
+        except Exception as e:
             a = 'failed to connect to the server'
             wiz.log("%s: %s" % (a, str(e)), xbmc.LOGERROR)
             return False, a
@@ -213,7 +213,7 @@ class Main:
             # self.copy2clip(page_url)
             wiz.log("URL for %s: %s" % (name, page_url), xbmc.LOGNOTICE)
             return True, page_url
-        except Exception, e:
+        except Exception as e:
             a = 'unable to retrieve the paste url'
             wiz.log("%s: %s" % (a, str(e)), xbmc.LOGERROR)
             return False, a
@@ -264,7 +264,7 @@ class Main:
         # return "Error Sending Email."
 
     def showResult(self, message, url=None):
-        if not url == None:
+        if url is not None:
             try:
                 fn        = url.split('/')[-2]
                 imagefile = wiz.generateQR(url, fn)
@@ -278,11 +278,12 @@ class Main:
                     os.remove(imagefile)
                 except:
                     pass
-            except Exception, e:
+            except Exception as e:
                 wiz.log(str(e), xbmc.LOGNOTICE)
                 confirm   = DIALOG.ok(ADDONTITLE, "[COLOR %s]%s[/COLOR]" % (COLOR2, message))
         else:
             confirm   = DIALOG.ok(ADDONTITLE, "[COLOR %s]%s[/COLOR]" % (COLOR2, message))
+
 
 if ( __name__ == '__main__' ):
     Main()

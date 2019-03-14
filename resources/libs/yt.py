@@ -447,9 +447,8 @@ def DecryptSignatureNew(s, playerUrl):
         playerData = urllib2.urlopen(request).read()
         playerData = playerData.decode('utf-8', 'ignore')
     
-    except Exception, e:
-        #print str(e)
-        print 'Failed to decode playerData'
+    except Exception as e:
+        print('Failed to decode playerData')
         return ''
         
     # get main function name 
@@ -488,7 +487,7 @@ def DecryptSignatureNew(s, playerUrl):
         algoCodeObj = compile(fullAlgoCode, '', 'exec')
     
     except:
-        print 'Failed to obtain decryptSignature code'
+        print('Failed to obtain decryptSignature code')
         return ''
 
     # for security allow only flew python global function in algo code
@@ -502,7 +501,7 @@ def DecryptSignatureNew(s, playerUrl):
         exec(algoCodeObj, vGlobals, vLocals)
     
     except:
-        print 'decryptSignature code failed to exceute correctly'
+        print('decryptSignature code failed to exceute correctly')
         return ''
 
     #print 'Decrypted signature = [%s]' % vLocals['outSignature']
@@ -516,7 +515,7 @@ def _getfullAlgoCode(mainFunName, recDepth=0):
     global allLocalVarNamesTab
     
     if MAX_REC_DEPTH <= recDepth:
-        print '_getfullAlgoCode: Maximum recursion depth exceeded'
+        print('_getfullAlgoCode: Maximum recursion depth exceeded')
         return 
 
     funBody = _getLocalFunBody(mainFunName)

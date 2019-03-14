@@ -45,24 +45,27 @@ else:
 LOGFILES       = ['xbmc.log', 'xbmc.old.log', 'kodi.log', 'kodi.old.log', 'spmc.log', 'spmc.old.log', 'tvmc.log', 'tvmc.old.log', 'Thumbs.db', '.gitignore', '.DS_Store']
 bad_files      = ['onechannelcache.db', 'saltscache.db', 'saltscache.db-shm', 'saltscache.db-wal', 'saltshd.lite.db', 'saltshd.lite.db-shm', 'saltshd.lite.db-wal', 'queue.db', 'commoncache.db', 'access.log', 'trakt.db', 'video_cache.db']
 
+
 def all(_in, _out, dp=None, ignore=None, title=None):
 	if dp: return allWithProgress(_in, _out, dp, ignore, title)
 	else: return allNoProgress(_in, _out, ignore)
+
 
 def allNoProgress(_in, _out, ignore):
 	try:
 		zin = zipfile.ZipFile(_in, 'r')
 		zin.extractall(_out)
-	except Exception, e:
+	except Exception as e:
 		wiz.log(str(e))
 		return False
 	return True
+
 
 def allWithProgress(_in, _out, dp, ignore, title):
 	count = 0; errors = 0; error = ''; update = 0; size = 0; excludes = []
 	try:
 		zin = zipfile.ZipFile(_in,  'r')
-	except Exception, e:
+	except Exception as e:
 		errors += 1; error += '%s\n' % e
 		wiz.log('Error Checking Zip: %s' % str(e), xbmc.LOGERROR)
 		return update, errors, error
@@ -79,7 +82,7 @@ def allWithProgress(_in, _out, dp, ignore, title):
 	zipsize = wiz.convertSize(sum([item.file_size for item in zin.infolist()]))
 
 	zipit = str(_in).replace('\\', '/').split('/')
-	title = title if not title == None else zipit[-1].replace('.zip', '')
+	title = title if title is not None else zipit[-1].replace('.zip', '')
 
 	for item in zin.infolist():
 		try:
@@ -108,11 +111,11 @@ def allWithProgress(_in, _out, dp, ignore, title):
 		elif file[-1].endswith('.csv'): skip = True
 		elif not str(item.filename).find('plugin.program.super.favourites') == -1 and KEEPSUPER == 'true': skip = True
 		elif not str(item.filename).find(ADDON_ID) == -1 and ignore == None: skip = True
-		if skip == True: wiz.log("Skipping: %s" % item.filename, xbmc.LOGNOTICE)
+		if skip: wiz.log("Skipping: %s" % item.filename, xbmc.LOGNOTICE)
 		else:
 			try:
 				zin.extract(item, _out)
-			except Exception, e:
+			except Exception as e:
 				errormsg  = "[COLOR %s]File:[/COLOR] [COLOR %s]%s[/COLOR]\n" % (COLOR2, COLOR1, file[-1])
 				errormsg += "[COLOR %s]Folder:[/COLOR] [COLOR %s]%s[/COLOR]\n" % (COLOR2, COLOR1, (item.filename).replace(file[-1],''))
 				errormsg += "[COLOR %s]Error:[/COLOR] [COLOR %s]%s[/COLOR]\n\n" % (COLOR2, COLOR1, str(e).replace('\\\\','\\').replace("'%s'" % item.filename, ''))
