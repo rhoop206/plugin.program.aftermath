@@ -17,8 +17,7 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, os, sys, xbmcvfs, glob
-import shutil
+import xbmc, xbmcgui, os, sys, xbmcvfs, glob
 import urllib2,urllib
 import re
 import uservar

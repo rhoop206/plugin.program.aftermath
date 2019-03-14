@@ -1,4 +1,4 @@
-import os, xbmc, xbmcaddon
+import os, xbmcaddon
 
 #########################################################
 ### Global Variables ####################################
