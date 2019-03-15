@@ -1,5 +1,5 @@
 ################################################################################
-#      Copyright (C) 2015 Surfacingx                                           #
+#      Copyright (C) 2019 drinferoo                                            #
 #                                                                              #
 #  This Program is free software; you can redistribute it and/or modify        #
 #  it under the terms of the GNU General Public License as published by        #
@@ -146,26 +146,34 @@ MAXWIZDATES    = [1, 2, 3, 7]
 
 
 ###########################
-###### Settings Items #####
+#      Settings Items     #
 ###########################
 
+
 def getS(name):
-	try: return ADDON.getSetting(name)
-	except: return False
+	try:
+		return ADDON.getSetting(name)
+	except:
+		return False
+
 
 def setS(name, value):
-	try: ADDON.setSetting(name, value)
-	except: return False
+	try:
+		ADDON.setSetting(name, value)
+	except:
+		return False
 
-def openS(name=""):
+
+def openS():
 	ADDON.openSettings()
 
-def clearS(type):
-	build    = {'buildname':'', 'buildversion':'', 'buildtheme':'', 'latestversion':'', 'lastbuildcheck':'2016-01-01'}
-	install  = {'installed':'false', 'extract':'', 'errors':''}
-	default  = {'defaultskinignore':'false', 'defaultskin':'', 'defaultskinname':''}
+
+def clearS(setting_type):
+	build = {'buildname':'', 'buildversion':'', 'buildtheme':'', 'latestversion':'', 'lastbuildcheck':'2016-01-01'}
+	install = {'installed':'false', 'extract':'', 'errors':''}
+	default = {'defaultskinignore':'false', 'defaultskin':'', 'defaultskinname':''}
 	lookfeel = ['default.enablerssfeeds', 'default.font', 'default.rssedit', 'default.skincolors', 'default.skintheme', 'default.skinzoom', 'default.soundskin', 'default.startupwindow', 'default.stereostrength']
-	if type == 'build':
+	if setting_type == 'build':
 		for set in build:
 			setS(set, build[set])
 		for set in install:
@@ -174,63 +182,46 @@ def clearS(type):
 			setS(set, default[set])
 		for set in lookfeel:
 			setS(set, '')
-	elif type == 'default':
+	elif setting_type == 'default':
 		for set in default:
 			setS(set, default[set])
 		for set in lookfeel:
 			setS(set, '')
-	elif type == 'install':
+	elif setting_type == 'install':
 		for set in install:
 			setS(set, install[set])
-	elif type == 'lookfeel':
+	elif setting_type == 'lookfeel':
 		for set in lookfeel:
 			setS(set, '')
 
+
 ###########################
-###### Display Items ######
+#      Display Items      #
 ###########################
 
-# def TextBoxes(heading,announce):
-	# class TextBox():
-		# WINDOW=10147
-		# CONTROL_LABEL=1
-		# CONTROL_TEXTBOX=5
-		# def __init__(self,*args,**kwargs):
-			# ebi("ActivateWindow(%d)" % (self.WINDOW, )) # activate the text viewer window
-			# self.win=xbmcgui.Window(self.WINDOW) # get window
-			# xbmc.sleep(500) # give window time to initialize
-			# self.setControls()
-		# def setControls(self):
-			# self.win.getControl(self.CONTROL_LABEL).setLabel(heading) # set heading
-			# try: f=open(announce); text=f.read()
-			# except: text=announce
-			# self.win.getControl(self.CONTROL_TEXTBOX).setText(str(text))
-			# return
-	# TextBox()
-	# while xbmc.getCondVisibility('Window.IsVisible(10147)'):
-		# xbmc.sleep(500)
+
+ACTION_PREVIOUS_MENU = 10 # ESC action
+ACTION_NAV_BACK = 92 # Backspace action
+ACTION_MOVE_LEFT = 1 # Left arrow key
+ACTION_MOVE_RIGHT = 2 # Right arrow key
+ACTION_MOVE_UP = 3 # Up arrow key
+ACTION_MOVE_DOWN = 4 # Down arrow key
+ACTION_MOUSE_WHEEL_UP = 104	# Mouse wheel up
+ACTION_MOUSE_WHEEL_DOWN = 105 # Mouse wheel down
+ACTION_MOVE_MOUSE = 107	# Down arrow key
+ACTION_SELECT_ITEM = 7 # Number Pad Enter
+ACTION_BACKSPACE = 110 # ?
+ACTION_MOUSE_LEFT_CLICK = 100
+ACTION_MOUSE_LONG_CLICK = 108
 
 
-ACTION_PREVIOUS_MENU 			=  10	## ESC action
-ACTION_NAV_BACK 				=  92	## Backspace action
-ACTION_MOVE_LEFT				=   1	## Left arrow key
-ACTION_MOVE_RIGHT 				=   2	## Right arrow key
-ACTION_MOVE_UP 					=   3	## Up arrow key
-ACTION_MOVE_DOWN 				=   4	## Down arrow key
-ACTION_MOUSE_WHEEL_UP 			= 104	## Mouse wheel up
-ACTION_MOUSE_WHEEL_DOWN			= 105	## Mouse wheel down
-ACTION_MOVE_MOUSE 				= 107	## Down arrow key
-ACTION_SELECT_ITEM				=   7	## Number Pad Enter
-ACTION_BACKSPACE				= 110	## ?
-ACTION_MOUSE_LEFT_CLICK 		= 100
-ACTION_MOUSE_LONG_CLICK 		= 108
 def TextBox(title, msg):
 	class TextBoxes(xbmcgui.WindowXMLDialog):
 		def onInit(self):
-			self.title      = 101
-			self.msg        = 102
-			self.scrollbar  = 103
-			self.okbutton   = 201
+			self.title = 101
+			self.msg = 102
+			self.scrollbar = 103
+			self.okbutton = 201
 			self.showdialog()
 
 		def showdialog(self):
@@ -246,9 +237,10 @@ def TextBox(title, msg):
 			if   action == ACTION_PREVIOUS_MENU: self.close()
 			elif action == ACTION_NAV_BACK: self.close()
 
-	tb = TextBoxes( "Textbox.xml" , ADDON.getAddonInfo('path'), 'DefaultSkin', title=title, msg=msg)
+	tb = TextBoxes("Textbox.xml", ADDON.getAddonInfo('path'), 'DefaultSkin', title=title, msg=msg)
 	tb.doModal()
 	del tb
+
 
 def highlightText(msg):
 	msg = msg.replace('\n', '[NL]')
@@ -260,133 +252,185 @@ def highlightText(msg):
 	msg = msg.replace('\\\\', '\\').replace(HOME, '')
 	return msg
 
-def LogNotify(title, message, times=2000, icon=ICON,sound=False):
+
+def LogNotify(title, message, times=2000, icon=ICON, sound=False):
 	DIALOG.notification(title, message, icon, int(times), sound)
-	#ebi('XBMC.Notification(%s, %s, %s, %s)' % (title, message, times, icon))
+	# ebi('XBMC.Notification(%s, %s, %s, %s)' % (title, message, times, icon))
+
 
 def percentage(part, whole):
 	return 100 * float(part)/float(whole)
 
+
 def addonUpdates(do=None):
 	setting = '"general.addonupdates"'
 	if do == 'set':
-		query = '{"jsonrpc":"2.0", "method":"Settings.GetSettingValue","params":{"setting":%s}, "id":1}' % (setting)
+		query = '{"jsonrpc":"2.0", "method":"Settings.GetSettingValue","params":{"setting":{0}}, "id":1}'.format(setting)
 		response = xbmc.executeJSONRPC(query)
 		match = re.compile('{"value":(.+?)}').findall(response)
 		if len(match) > 0: default = match[0]
 		else: default = 0
 		setS('default.addonupdate', str(default))
-		query = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue","params":{"setting":%s,"value":%s}, "id":1}' % (setting, '2')
+		query = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue","params":{"setting":{0},"value":{1}}, "id":1}'.format(setting, '2')
 		response = xbmc.executeJSONRPC(query)
 	elif do == 'reset':
 		try:
 			value = int(float(getS('default.addonupdate')))
 		except:
 			value = 0
-		if not value in [0, 1, 2]: value = 0
-		query = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue","params":{"setting":%s,"value":%s}, "id":1}' % (setting, value)
+
+		if value not in [0, 1, 2]:
+			value = 0
+
+		query = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue","params":{"setting":{0},"value":{1}}, "id":1}'.format(setting, value)
 		response = xbmc.executeJSONRPC(query)
 
+
 ###########################
-###### Build Info #########
+#      Build Info         #
 ###########################
 
+
 def checkBuild(name, ret):
-	if not workingURL(BUILDFILE): return False
-	link = openURL(BUILDFILE).replace('\n','').replace('\r','').replace('\t','').replace('gui=""', 'gui="http://"').replace('theme=""', 'theme="http://"')
+	if not workingURL(BUILDFILE):
+		return False
+	link = openURL(BUILDFILE).replace('\n', '').replace('\r', '').replace('\t', '').replace('gui=""', 'gui="http://"').replace('theme=""', 'theme="http://"')
 	match = re.compile('name="%s".+?ersion="(.+?)".+?rl="(.+?)".+?inor="(.+?)".+?ui="(.+?)".+?odi="(.+?)".+?heme="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?review="(.+?)".+?dult="(.+?)".+?nfo="(.+?)".+?escription="(.+?)"' % name).findall(link)
 	if len(match) > 0:
 		for version, url, minor, gui, kodi, theme, icon, fanart, preview, adult, info, description in match:
-			if ret   == 'version':       return version
-			elif ret == 'url':           return url
-			elif ret == 'minor':         return minor
-			elif ret == 'gui':           return gui
-			elif ret == 'kodi':          return kodi
-			elif ret == 'theme':         return theme
-			elif ret == 'icon':          return icon
-			elif ret == 'fanart':        return fanart
-			elif ret == 'preview':       return preview
-			elif ret == 'adult':         return adult
-			elif ret == 'description':   return description
-			elif ret == 'info':          return info
-			elif ret == 'all':           return name, version, url, minor, gui, kodi, theme, icon, fanart, preview, adult, info, description
-	else: return False
-	
+			if ret == 'version': return version
+			elif ret == 'url': return url
+			elif ret == 'minor': return minor
+			elif ret == 'gui': return gui
+			elif ret == 'kodi': return kodi
+			elif ret == 'theme': return theme
+			elif ret == 'icon': return icon
+			elif ret == 'fanart': return fanart
+			elif ret == 'preview': return preview
+			elif ret == 'adult': return adult
+			elif ret == 'description': return description
+			elif ret == 'info': return info
+			elif ret == 'all': return name, version, url, minor, gui, kodi, theme, icon, fanart, preview, adult, info, description
+	else:
+		return False
+
+
 def checkInfo(name):
-	if not workingURL(name): return False
-	link = openURL(name).replace('\n','').replace('\r','').replace('\t','')
+	if not workingURL(name):
+		return False
+	link = openURL(name).replace('\n', '').replace('\r', '').replace('\t', '')
 	match = re.compile('.+?ame="(.+?)".+?xtracted="(.+?)".+?ipsize="(.+?)".+?kin="(.+?)".+?reated="(.+?)".+?rograms="(.+?)".+?ideo="(.+?)".+?usic="(.+?)".+?icture="(.+?)".+?epos="(.+?)".+?cripts="(.+?)"').findall(link)
 	if len(match) > 0:
 		for name, extracted, zipsize, skin, created, programs, video, music, picture, repos, scripts in match:
 			return name, extracted, zipsize, skin, created, programs, video, music, picture, repos, scripts
-	else: return False
+	else:
+		return False
+
 
 def checkTheme(name, theme, ret):
 	themeurl = checkBuild(name, 'theme')
-	if not workingURL(themeurl): return False
-	link = openURL(themeurl).replace('\n','').replace('\r','').replace('\t','')
-	match = re.compile('name="%s".+?rl="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?dult=(.+?).+?escription="(.+?)"' % theme).findall(link)
+	if not workingURL(themeurl):
+		return False
+	link = openURL(themeurl).replace('\n', '').replace('\r', '').replace('\t', '')
+	match = re.compile('name="{0}".+?rl="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?dult=(.+?).+?escription="(.+?)"'.format(theme)).findall(link)
 	if len(match) > 0:
 		for url, icon, fanart, adult, description in match:
-			if ret   == 'url':           return url
-			elif ret == 'icon':          return icon
-			elif ret == 'fanart':        return fanart
-			elif ret == 'adult':         return adult
-			elif ret == 'description':   return description
-			elif ret == 'all':           return name, theme, url, icon, fanart, adult, description
-	else: return False
+			if ret == 'url': return url
+			elif ret == 'icon': return icon
+			elif ret == 'fanart': return fanart
+			elif ret == 'adult': return adult
+			elif ret == 'description': return description
+			elif ret == 'all': return name, theme, url, icon, fanart, adult, description
+	else:
+		return False
+
 
 def checkWizard(ret):
-	if not workingURL(WIZARDFILE): return False
-	link = openURL(WIZARDFILE).replace('\n','').replace('\r','').replace('\t','')
-	match = re.compile('id="%s".+?ersion="(.+?)".+?ip="(.+?)"' % ADDON_ID).findall(link)
+	if not workingURL(WIZARDFILE):
+		return False
+	link = openURL(WIZARDFILE).replace('\n', '').replace('\r', '').replace('\t', '')
+	match = re.compile('id="{0}".+?ersion="(.+?)".+?ip="(.+?)"'.format(ADDON_ID)).findall(link)
 	if len(match) > 0:
 		for version, zip in match:
-			if ret   == 'version':       return version
-			elif ret == 'zip':           return zip
-			elif ret == 'all':           return ADDON_ID, version, zip
-	else: return False
+			if ret == 'version': return version
+			elif ret == 'zip': return zip
+			elif ret == 'all': return ADDON_ID, version, zip
+	else:
+		return False
 
-def buildCount(ver=None):
-	link  = openURL(BUILDFILE).replace('\n','').replace('\r','').replace('\t','')
+
+def buildCount():
+	link = openURL(BUILDFILE).replace('\n', '').replace('\r', '').replace('\t', '')
 	match = re.compile('name="(.+?)".+?odi="(.+?)".+?dult="(.+?)"').findall(link)
-	total = 0; count15 = 0; count16 = 0; count17 = 0; count18 = 0; hidden = 0; adultcount = 0
+
+	total = 0
+	count15 = 0
+	count16 = 0
+	count17 = 0
+	count18 = 0
+	hidden = 0
+	adultcount = 0
+
 	if len(match) > 0:
 		for name, kodi, adult in match:
-			if not SHOWADULT == 'true' and adult.lower() == 'yes': hidden += 1; adultcount +=1; continue
-			if not DEVELOPER == 'true' and strTest(name): hidden += 1; continue
+			if not SHOWADULT == 'true' and adult.lower() == 'yes':
+				hidden += 1
+				adultcount += 1
+				continue
+			if not DEVELOPER == 'true' and strTest(name):
+				hidden += 1
+				continue
+
 			kodi = int(float(kodi))
 			total += 1
-			if kodi == 18: count18 += 1
-			elif kodi == 17: count17 += 1
-			elif kodi == 16: count16 += 1
-			elif kodi <= 15: count15 += 1
+			if kodi == 18:
+				count18 += 1
+			elif kodi == 17:
+				count17 += 1
+			elif kodi == 16:
+				count16 += 1
+			elif kodi <= 15:
+				count15 += 1
+
 	return total, count15, count16, count17, count18, adultcount, hidden
+
 
 def strTest(string):
 	a = (string.lower()).split(' ')
-	if 'test' in a: return True
-	else: return False
+	if 'test' in a:
+		return True
+	else:
+		return False
+
 
 def themeCount(name, count=True):
 	themefile = checkBuild(name, 'theme')
-	if themefile == 'http://' or not themefile: return False
-	link = openURL(themefile).replace('\n','').replace('\r','').replace('\t','')
+	if themefile == 'http://' or not themefile:
+		return False
+	link = openURL(themefile).replace('\n', '').replace('\r', '').replace('\t', '')
 	match = re.compile('name="(.+?)".+?dult="(.+?)"').findall(link)
-	if len(match) == 0: return False
+	if len(match) == 0:
+		return False
 	themes = []
 	for item, adult in match:
-		if not SHOWADULT == 'true' and adult.lower() == 'yes': continue
+		if not SHOWADULT == 'true' and adult.lower() == 'yes':
+			continue
 		themes.append(item)
 	if len(themes) > 0:
-		if count: return len(themes)
-		else: return themes
-	else: return False
+		if count:
+			return len(themes)
+		else:
+			return themes
+	else:
+		return False
+
 
 def thirdParty(url=None):
-	if url == None: return
-	link = openURL(url).replace('\n','').replace('\r','').replace('\t','')
-	match  = re.compile('name="(.+?)".+?ersion="(.+?)".+?rl="(.+?)".+?odi="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?dult="(.+?)".+?escription="(.+?)"').findall(link)
+	if url is None:
+		return
+
+	link = openURL(url).replace('\n', '').replace('\r', '').replace('\t', '')
+	match = re.compile('name="(.+?)".+?ersion="(.+?)".+?rl="(.+?)".+?odi="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?dult="(.+?)".+?escription="(.+?)"').findall(link)
 	match2 = re.compile('name="(.+?)".+?rl="(.+?)".+?mg="(.+?)".+?anart="(.+?)".+?escription="(.+?)"').findall(link)
 	if len(match) > 0:
 		return True, match
@@ -394,6 +438,7 @@ def thirdParty(url=None):
 		return False, match2
 	else:
 		return False, []
+
 
 def basecode(text, encode=True):
 	import base64
@@ -403,23 +448,32 @@ def basecode(text, encode=True):
 		msg = base64.decodestring(text)
 	return msg
 
+
 def flushOldCache():
-	if not os.path.exists(TEXTCACHE): os.makedirs(TEXTCACHE)
-	try:    age = int(float(CACHEAGE))
-	except: age = 30
-	match = glob.glob(os.path.join(TEXTCACHE,'*.txt'))
+	if not os.path.exists(TEXTCACHE):
+		os.makedirs(TEXTCACHE)
+	try:
+		age = int(float(CACHEAGE))
+	except:
+		age = 30
+	match = glob.glob(os.path.join(TEXTCACHE, '*.txt'))
 	for file in match:
 		file_modified = datetime.fromtimestamp(os.path.getmtime(file))
 		if datetime.now() - file_modified > timedelta(minutes=age):
-			log("Found: %s" % file)
+			log("Found: {0}".format(file))
 			os.remove(file)
 
+
 def textCache(url):
-	try:    age = int(float(CACHEAGE))
-	except: age = 30
+	try:
+		age = int(float(CACHEAGE))
+	except:
+		age = 30
+
 	if CACHETEXT.lower() == 'yes':
 		spliturl = url.split('/')
-		if not os.path.exists(TEXTCACHE): os.makedirs(TEXTCACHE)
+		if not os.path.exists(TEXTCACHE):
+			os.makedirs(TEXTCACHE)
 		file = xbmc.makeLegalFilename(os.path.join(TEXTCACHE, spliturl[-1]+'_'+spliturl[-2]+'.txt'))
 		if os.path.exists(file):
 			file_modified = datetime.fromtimestamp(os.path.getmtime(file))
@@ -428,7 +482,8 @@ def textCache(url):
 					os.remove(file)
 
 		if not os.path.exists(file):
-			if not workingURL(url): return False
+			if not workingURL(url):
+				return False
 			f = open(file, 'w+')
 			textfile = openURL(url)
 			content = basecode(textfile, True)
@@ -443,19 +498,23 @@ def textCache(url):
 		textfile = openURL(url)
 		return textfile
 
+
 ###########################
-###### URL Checks #########
+#      URL Checks         #
 ###########################
 
+
 def workingURL(url):
-	if url in ['http://', 'https://', '']: return False
-	check = 0; status = ''
+	if url in ['http://', 'https://', '']:
+		return False
+	check = 0
+	status = ''
 	while check < 3:
 		check += 1
 		try:
-			req = urllib2.Request(url)
+			req = urllib.request.Request(url)
 			req.add_header('User-Agent', USER_AGENT)
-			response = urllib2.urlopen(req)
+			response = urllib.request.urlopen(req)
 			response.close()
 			status = True
 			break
@@ -465,24 +524,27 @@ def workingURL(url):
 			xbmc.sleep(500)
 	return status
 
+
 def openURL(url):
-	req = urllib2.Request(url)
+	req = urllib.request.Request(url)
 	req.add_header('User-Agent', USER_AGENT)
-	response = urllib2.urlopen(req)
+	response = urllib.request.urlopen(req)
 	link=response.read()
 	response.close()
 	return link
 
 ###########################
-###### Misc Functions #####
+#      Misc Functions     #
 ###########################
 
-def getKeyboard( default="", heading="", hidden=False ):
-	keyboard = xbmc.Keyboard( default, heading, hidden )
+
+def getKeyboard(default="", heading="", hidden=False):
+	keyboard = xbmc.Keyboard(default, heading, hidden)
 	keyboard.doModal()
 	if keyboard.isConfirmed():
-		return unicode( keyboard.getText(), "utf-8" )
+		return keyboard.getText()
 	return default
+
 
 def getSize(path, total=0):
 	for dirpath, dirnames, filenames in os.walk(path):
@@ -491,6 +553,7 @@ def getSize(path, total=0):
 			total += os.path.getsize(fp)
 	return total
 
+
 def convertSize(num, suffix='B'):
 	for unit in ['', 'K', 'M', 'G']:
 		if abs(num) < 1024.0:
@@ -498,10 +561,10 @@ def convertSize(num, suffix='B'):
 		num /= 1024.0
 	return "%.02f %s%s" % (num, 'G', suffix)
 
+
 def getCacheSize():
-	PROFILEADDONDATA = os.path.join(PROFILE,'addon_data')
-	dbfiles   = [
-		## TODO: fix these
+	PROFILEADDONDATA = os.path.join(PROFILE, 'addon_data')
+	dbfiles = [
 		(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.db')),
 		(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.meta.5.db')),
 		(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.providers.13.db')),
@@ -520,13 +583,13 @@ def getCacheSize():
 		(os.path.join(ADDOND, 'plugin.video.seren', 'torrentScrape.db')),
 		(os.path.join(ADDOND, 'script.module.simplecache', 'simplecache.db'))]
 	cachelist = [
-		(ADDOND),
-		(os.path.join(HOME,'cache')),
-		(os.path.join(HOME,'temp')),
+		ADDOND,
+		(os.path.join(HOME, 'cache')),
+		(os.path.join(HOME, 'temp')),
 		(os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'Other')),
 		(os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'LocalAndRental')),
-		(os.path.join(ADDOND,'script.module.simple.downloader')),
-		(os.path.join(ADDOND,'plugin.video.itv','Images')),
+		(os.path.join(ADDOND, 'script.module.simple.downloader')),
+		(os.path.join(ADDOND, 'plugin.video.itv','Images')),
 		(os.path.join(ADDOND, 'script.extendedinfo', 'images')),
 		(os.path.join(ADDOND, 'script.extendedinfo', 'TheMovieDB')),
 		(os.path.join(ADDOND, 'script.extendedinfo', 'YouTube')),
@@ -534,8 +597,8 @@ def getCacheSize():
 		(os.path.join(ADDOND, 'plugin.program.autocompletion', 'Bing')),
 		(os.path.join(ADDOND, 'plugin.video.openmeta', '.storage'))]
 	if not PROFILEADDONDATA == ADDOND:
-		cachelist.append(os.path.join(PROFILEADDONDATA,'script.module.simple.downloader'))
-		cachelist.append(os.path.join(PROFILEADDONDATA,'plugin.video.itv','Images'))
+		cachelist.append(os.path.join(PROFILEADDONDATA, 'script.module.simple.downloader'))
+		cachelist.append(os.path.join(PROFILEADDONDATA, 'plugin.video.itv','Images'))
 		cachelist.append(os.path.join(ADDOND, 'script.extendedinfo', 'images'))
 		cachelist.append(os.path.join(ADDOND, 'script.extendedinfo', 'TheMovieDB')),
 		cachelist.append(os.path.join(ADDOND, 'script.extendedinfo', 'YouTube')),
@@ -547,8 +610,9 @@ def getCacheSize():
 	totalsize = 0
 
 	for item in cachelist:
-		if not os.path.exists(item): continue
-		if not item in [ADDOND, PROFILEADDONDATA]:
+		if not os.path.exists(item):
+			continue
+		if item not in [ADDOND, PROFILEADDONDATA]:
 			totalsize = getSize(item, totalsize)
 		else:
 			for root, dirs, files in os.walk(item):
@@ -558,9 +622,9 @@ def getCacheSize():
 
 	if INCLUDEVIDEO == 'true':
 		files = []
-		if INCLUDEALL == 'true': files = dbfiles
+		if INCLUDEALL == 'true':
+			files = dbfiles
 		else:
-			## TODO: Double check these and add more
 			if INCLUDEEXODUSREDUX == 'true':
 				files.append(os.path.join(ADDOND, 'plugin.video.exodusredux', 'cache.db'))
 				files.append(os.path.join(ADDOND, 'plugin.video.exodusredux', 'meta.5.db'))
@@ -583,39 +647,55 @@ def getCacheSize():
 			if INCLUDESEREN == 'true':
 				files.append(os.path.join(ADDOND, 'plugin.video.seren', 'cache.db'))
 				files.append(os.path.join(ADDOND, 'plugin.video.seren', 'torrentScrape.db'))
-			if INCLUDEOVEREASY == 'true': 
+			if INCLUDEOVEREASY == 'true':
 				files.append(os.path.join(ADDOND, 'plugin.video.overeasy', 'cache.db'))
 				files.append(os.path.join(ADDOND, 'plugin.video.overeasy', 'meta.5.db'))
 				files.append(os.path.join(ADDOND, 'plugin.video.overeasy', 'providers.13.db'))
 		if len(files) > 0:
 			for item in files:
-				if not os.path.exists(item): continue
+				if not os.path.exists(item):
+					continue
 				totalsize += os.path.getsize(item)
-		else: log("Clear Cache: Clear Video Cache Not Enabled", xbmc.LOGNOTICE)
+		else:
+			log("Clear Cache: Clear Video Cache Not Enabled", xbmc.LOGNOTICE)
 	return totalsize
 
+
 def getInfo(label):
-	try: return xbmc.getInfoLabel(label)
-	except: return False
+	try:
+		return xbmc.getInfoLabel(label)
+	except:
+		return False
+
 
 def removeFolder(path):
-	log("Deleting Folder: %s" % path, xbmc.LOGNOTICE)
-	try: shutil.rmtree(path,ignore_errors=True, onerror=None)
-	except: return False
+	log("Deleting Folder: {0}".format(path), xbmc.LOGNOTICE)
+	try:
+		shutil.rmtree(path, ignore_errors=True, onerror=None)
+	except:
+		return False
+
 
 def removeFile(path):
-	log("Deleting File: %s" % path, xbmc.LOGNOTICE)
-	try:    os.remove(path)
-	except: return False
+	log("Deleting File: {0}".format(path), xbmc.LOGNOTICE)
+	try:
+		os.remove(path)
+	except:
+		return False
+
 
 def currSkin():
 	return xbmc.getSkinDir()
 
+
 def cleanHouse(folder, ignore=False):
 	log(folder)
-	total_files = 0; total_folds = 0
+	total_files = 0
+	total_folds = 0
+
 	for root, dirs, files in os.walk(folder):
-		if not ignore: dirs[:] = [d for d in dirs if d not in EXCLUDES]
+		if not ignore:
+			dirs[:] = [d for d in dirs if d not in EXCLUDES]
 		file_count = 0
 		file_count += len(files)
 		if file_count >= 0:
@@ -627,15 +707,16 @@ def cleanHouse(folder, ignore=False):
 					try:
 						shutil.rmtree(os.path.join(root, f))
 					except:
-						log("Error Deleting %s" % f, xbmc.LOGERROR)
+						log("Error Deleting {0}".format(f), xbmc.LOGERROR)
 			for d in dirs:
 				total_folds += 1
 				try:
 					shutil.rmtree(os.path.join(root, d))
 					total_folds += 1
 				except:
-					log("Error Deleting %s" % d, xbmc.LOGERROR)
+					log("Error Deleting {0}".format(d), xbmc.LOGERROR)
 	return total_files, total_folds
+
 
 def emptyfolder(folder):
 	total = 0
@@ -646,81 +727,117 @@ def emptyfolder(folder):
 		if file_count == 0:
 			shutil.rmtree(os.path.join(root))
 			total += 1
-			log("Empty Folder: %s" % root, xbmc.LOGNOTICE)
+			log("Empty Folder: {0}".format(root), xbmc.LOGNOTICE)
 	return total
 
+
 def log(msg, level=xbmc.LOGDEBUG):
-	if not os.path.exists(ADDONDATA): os.makedirs(ADDONDATA)
-	if not os.path.exists(WIZLOG): f = open(WIZLOG, 'w'); f.close()
-	if WIZDEBUGGING == 'false': return False
-	if DEBUGLEVEL == '0': return False
-	if DEBUGLEVEL == '1' and not level in [xbmc.LOGNOTICE, xbmc.LOGERROR, xbmc.LOGSEVERE, xbmc.LOGFATAL]: return False
-	if DEBUGLEVEL == '2': level = xbmc.LOGNOTICE
+	if not os.path.exists(ADDONDATA):
+		os.makedirs(ADDONDATA)
+	if not os.path.exists(WIZLOG):
+		f = open(WIZLOG, 'w')
+		f.close()
+	if WIZDEBUGGING == 'false':
+		return False
+	if DEBUGLEVEL == '0':
+		return False
+	if DEBUGLEVEL == '1' and level not in [xbmc.LOGNOTICE, xbmc.LOGERROR, xbmc.LOGSEVERE, xbmc.LOGFATAL]:
+		return False
+	if DEBUGLEVEL == '2':
+		level = xbmc.LOGNOTICE
 	try:
-		if isinstance(msg, unicode):
-			msg = '%s' % (msg.encode('utf-8'))
-		xbmc.log('%s: %s' % (ADDONTITLE, msg), level)
+		# if isinstance(msg, unicode):
+		#	msg = '%s' % (msg.encode('utf-8'))
+		xbmc.log('{0}: {1}'.format(ADDONTITLE, msg), level)
 	except Exception as e:
-		try: xbmc.log('Logging Failure: %s' % (e), level)
-		except: pass
+		try:
+			xbmc.log('Logging Failure: {0}'.format(e), level)
+		except:
+			pass
 	if ENABLEWIZLOG == 'true':
 		lastcheck = getS('nextcleandate') if not getS('nextcleandate') == '' else str(TODAY)
-		if CLEANWIZLOG == 'true' and lastcheck <= str(TODAY): checkLog()
+		if CLEANWIZLOG == 'true' and lastcheck <= str(TODAY):
+			checkLog()
 		with open(WIZLOG, 'a') as f:
-			line = "[%s %s] %s" % (datetime.now().date(), str(datetime.now().time())[:8], msg)
+			line = "[{0} {1}] {2}".format(datetime.now().date(), str(datetime.now().time())[:8], msg)
 			f.write(line.rstrip('\r\n')+'\n')
+
 
 def checkLog():
 	nextclean = getS('nextcleandate')
 	next = TOMORROW
 	if CLEANWIZLOGBY == '0':
 		keep = TODAY - timedelta(days=MAXWIZDATES[int(float(CLEANDAYS))])
-		x    = 0
-		f    = open(WIZLOG); a = f.read(); f.close(); lines = a.split('\n')
+		x = 0
+
+		f = open(WIZLOG)
+		a = f.read()
+		f.close()
+		lines = a.split('\n')
+
 		for line in lines:
 			if str(line[1:11]) >= str(keep):
 				break
 			x += 1
+
 		newfile = lines[x:]
 		writing = '\n'.join(newfile)
-		f = open(WIZLOG, 'w'); f.write(writing); f.close()
+		f = open(WIZLOG, 'w')
+		f.write(writing)
+		f.close()
 	elif CLEANWIZLOGBY == '1':
 		maxsize = MAXWIZSIZE[int(float(CLEANSIZE))]*1024
-		f    = open(WIZLOG); a = f.read(); f.close(); lines = a.split('\n')
+
+		f = open(WIZLOG)
+		a = f.read()
+		f.close()
+		lines = a.split('\n')
+
 		if os.path.getsize(WIZLOG) >= maxsize:
 			start = len(lines)/2
 			newfile = lines[start:]
 			writing = '\n'.join(newfile)
-			f = open(WIZLOG, 'w'); f.write(writing); f.close()
+			f = open(WIZLOG, 'w')
+			f.write(writing)
+			f.close()
 	elif CLEANWIZLOGBY == '2':
-		f      = open(WIZLOG); a = f.read(); f.close(); lines = a.split('\n')
+		f = open(WIZLOG)
+		a = f.read()
+		f.close()
+		lines = a.split('\n')
+
 		maxlines = MAXWIZLINES[int(float(CLEANLINES))]
 		if len(lines) > maxlines:
 			start = len(lines) - int(maxlines/2)
 			newfile = lines[start:]
 			writing = '\n'.join(newfile)
-			f = open(WIZLOG, 'w'); f.write(writing); f.close()
+			f = open(WIZLOG, 'w')
+			f.write(writing)
+			f.close()
 	setS('nextcleandate', str(next))
+
 
 def latestDB(DB):
 	if DB in ['Addons', 'ADSP', 'Epg', 'MyMusic', 'MyVideos', 'Textures', 'TV', 'ViewModes']:
-		match = glob.glob(os.path.join(DATABASE,'%s*.db' % DB))
-		comp = '%s(.+?).db' % DB[1:]
+		match = glob.glob(os.path.join(DATABASE, '{0}*.db'.format(DB)))
+		comp = '{0}(.+?).db'.format(DB[1:])
 		highest = 0
-		for file in match :
-			try: check = int(re.compile(comp).findall(file)[0])
-			except: check = 0
-			if highest < check :
+		for file in match:
+			try:
+				check = int(re.compile(comp).findall(file)[0])
+			except:
+				check = 0
+			if highest < check:
 				highest = check
-		return '%s%s.db' % (DB, highest)
-	else: return False
+		return '{0}{1}.db'.format(DB, highest)
+	else:
+		return False
 
-def viewFile(name, url):
-	return
 
 def forceText():
 	cleanHouse(TEXTCACHE)
-	LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Text Files Flushed![/COLOR]' % (COLOR2))
+	LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), '[COLOR {0}]Text Files Flushed![/COLOR]'.format(COLOR2))
+
 
 def addonId(add):
 	try:
@@ -728,26 +845,30 @@ def addonId(add):
 	except:
 		return False
 
+
 def toggleDependency(name, DP=None):
 	dep=os.path.join(ADDONS, name, 'addon.xml')
 	if os.path.exists(dep):
-		source = open(dep,mode='r'); link=source.read(); source.close();
-		match  = parseDOM(link, 'import', ret='addon')
+		source = open(dep, mode='r')
+		link=source.read()
+		source.close()
+		match = parseDOM(link, 'import', ret='addon')
 		for depends in match:
-			if not 'xbmc.python' in depends:
-				dependspath=os.path.join(ADDONS, depends)
-				if not DP is None:
-					DP.update("","Checking Dependency [COLOR yellow]%s[/COLOR] for [COLOR yellow]%s[/COLOR]" % (depends, name),"")
+			if 'xbmc.python' not in depends:
+				dependspath = os.path.join(ADDONS, depends)
+				if DP is not None:
+					DP.update("", "Checking Dependency [COLOR yellow]{0}[/COLOR] for [COLOR yellow]{1}[/COLOR]".format(depends, name), "")
 				if os.path.exists(dependspath):
 					toggleAddon(name, 'true')
 			xbmc.sleep(100)
 
+# TODO: Fix this. The link is broken and redirects to a spam site now.
 def toggleAdult():
-	do = DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to [COLOR %s]Enable[/COLOR] or [COLOR %s]Disable[/COLOR] all Adult addons?[/COLOR]" % (COLOR2, COLOR1, COLOR1), yeslabel="[B][COLOR springgreen]Enable[/COLOR][/B]", nolabel="[B][COLOR red]Disable[/COLOR][/B]")
+	do = DIALOG.yesno(ADDONTITLE, "[COLOR {0}]Would you like to [COLOR {1}]Enable[/COLOR] or [COLOR {2}]Disable[/COLOR] all Adult addons?[/COLOR]".format(COLOR2, COLOR1, COLOR1), yeslabel="[B][COLOR springgreen]Enable[/COLOR][/B]", nolabel="[B][COLOR red]Disable[/COLOR][/B]")
 	state = 'true' if do == 1 else 'false'
 	goto = 'Enabling' if do == 1 else 'Disabling'
-	link = openURL('http://noobsandnerds.com/TI/AddonPortal/adult.php').replace('\n','').replace('\r','').replace('\t','')
-	list = re.compile('i="(.+?)"').findall(link)
+	# link = openURL('http://noobsandnerds.com/TI/AddonPortal/adult.php').replace('\n', '').replace('\r', '').replace('\t', '')
+	list = re.compile('i="(.+?)"').findall("")
 	found = []
 	for item in list:
 		fold = os.path.join(ADDONS, item)
@@ -763,20 +884,25 @@ def toggleAdult():
 		forceUpdate(True)
 	else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]No Adult Addons Found[/COLOR]" % COLOR2)
 
+
 def createTemp(plugin):
-	temp   = os.path.join(PLUGIN, 'resources', 'tempaddon.xml')
-	f      = open(temp, 'r'); r = f.read(); f.close()
+	temp = os.path.join(PLUGIN, 'resources', 'tempaddon.xml')
+
+	f = open(temp, 'r')
+	r = f.read()
+	f.close()
+
 	plugdir = os.path.join(ADDONS, plugin)
-	if not os.path.exists(plugdir): os.makedirs(plugdir)
+	if not os.path.exists(plugdir):
+		os.makedirs(plugdir)
 	a = open(os.path.join(plugdir, 'addon.xml'), 'w')
 	a.write(r.replace('testid', plugin).replace('testversion', '0.0.1'))
 	a.close()
-	log("%s: wrote addon.xml" % plugin)
+	log("{0}: wrote addon.xml".format(plugin))
+
 
 def fixmetas():
 	idlist = []
-	#temp   = os.path.join(PLUGIN, 'resources', 'tempaddon.xml')
-	#f      = open(temp, 'r'); r = f.read(); f.close()
 	for item in idlist:
 		fold = os.path.join(ADDOND, item)
 		if os.path.exists(fold):
@@ -784,146 +910,171 @@ def fixmetas():
 			if os.path.exists(storage):
 				cleanHouse(storage)
 				removeFolder(storage)
-			#if not os.path.exists(os.path.join(fold, 'addon.xml')): continue
-			#a = open(os.path.join(fold, 'addon.xml'), 'w')
-			#a.write(r.replace('testid', item).replace('testversion', '0.0.1'))
-			#a.close()
-			#log("%s: re-wrote addon.xml" % item)
+
 
 def toggleAddon(id, value, over=None):
 	log("toggling %s" % id)
-	# if KODIV >= 17:
-		# log("kodi 17 way")
-		# goto = 0 if value == 'false' else 1
-		# addonDatabase(id, goto)
-		# if not over == None:
-			# forceUpdate(True)
-		# return
-	addonid  = id
+	addonid = id
 	addonxml = os.path.join(ADDONS, id, 'addon.xml')
 	if os.path.exists(addonxml):
-		f        = open(addonxml)
-		b        = f.read()
-		tid      = parseDOM(b, 'addon', ret='id')
-		tname    = parseDOM(b, 'addon', ret='name')
-		tservice = parseDOM(b, 'extension', ret='library', attrs = {'point': 'xbmc.service'})
+		f = open(addonxml)
+		b = f.read()
+		tid = parseDOM(b, 'addon', ret='id')
+		tservice = parseDOM(b, 'extension', ret='library', attrs={'point': 'xbmc.service'})
 		try:
 			if len(tid) > 0:
 				addonid = tid[0]
 			if len(tservice) > 0:
-				log("We got a live one, stopping script: %s" % match[0], xbmc.LOGDEBUG)
-				ebi('StopScript(%s)' % os.path.join(ADDONS, addonid))
-				ebi('StopScript(%s)' % addonid)
-				ebi('StopScript(%s)' % os.path.join(ADDONS, addonid, tservice[0]))
+				log("We got a live one, stopping script: {0}".format(match[0]), xbmc.LOGDEBUG)
+				ebi('StopScript({0})'.format(os.path.join(ADDONS, addonid)))
+				ebi('StopScript({0})'.format(addonid))
+				ebi('StopScript({0})'.format(os.path.join(ADDONS, addonid, tservice[0])))
 				xbmc.sleep(500)
 		except:
 			pass
-	query = '{"jsonrpc":"2.0", "method":"Addons.SetAddonEnabled","params":{"addonid":"%s","enabled":%s}, "id":1}' % (addonid, value)
+	query = '{"jsonrpc":"2.0", "method":"Addons.SetAddonEnabled","params":{"addonid":"{0}","enabled":{1}}, "id":1}'.format(addonid, value)
 	response = xbmc.executeJSONRPC(query)
 	if 'error' in response and over is None:
 		v = 'Enabling' if value == 'true' else 'Disabling'
-		DIALOG.ok(ADDONTITLE, "[COLOR %s]Error %s [COLOR %s]%s[/COLOR]" % (COLOR2, v, COLOR1 , id), "Check to make sure the addon list is upto date and try again.[/COLOR]")
+		DIALOG.ok(ADDONTITLE, "[COLOR {0}]Error {1} [COLOR {2}]{3}[/COLOR]".format(COLOR2, v, COLOR1 , id), "Check to make sure the addon list is up to date and try again.[/COLOR]")
 		forceUpdate()
+
 
 def addonInfo(add, info):
 	addon = addonId(add)
-	if addon: return addon.getAddonInfo(info)
-	else: return False
+	if addon:
+		return addon.getAddonInfo(info)
+	else:
+		return False
+
 
 def whileWindow(window, active=False, count=0, counter=15):
-	windowopen = getCond('Window.IsActive(%s)' % window)
-	log("%s is %s" % (window, windowopen), xbmc.LOGDEBUG)
+	windowopen = getCond('Window.IsActive({0})'.format(window))
+	log("{0} is {1}".format(window, windowopen), xbmc.LOGDEBUG)
 	while not windowopen and count < counter:
-		log("%s is %s(%s)" % (window, windowopen, count))
-		windowopen = getCond('Window.IsActive(%s)' % window)
+		log("{0} is {1}({2})".format(window, windowopen, count))
+		windowopen = getCond('Window.IsActive({0})'.formatwindow)
 		count += 1
 		xbmc.sleep(500)
 
 	while windowopen:
 		active = True
-		log("%s is %s" % (window, windowopen), xbmc.LOGDEBUG)
-		windowopen = getCond('Window.IsActive(%s)' % window)
+		log("{0} is {1}".format(window, windowopen), xbmc.LOGDEBUG)
+		windowopen = getCond('Window.IsActive({0})'.format(window))
 		xbmc.sleep(250)
+
 	return active
+
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 	return ''.join(random.choice(chars) for _ in range(size))
 
+
 def generateQR(url, filename):
-	if not os.path.exists(QRCODES): os.makedirs(QRCODES)
-	imagefile = os.path.join(QRCODES,'%s.png' % filename)
-	qrIMG     = pyqrcode.create(url)
+	if not os.path.exists(QRCODES):
+		os.makedirs(QRCODES)
+	imagefile = os.path.join(QRCODES, '{0}.png'.format(filename))
+	qrIMG = pyqrcode.create(url)
 	qrIMG.png(imagefile, scale=10)
 	return imagefile
 
+
 def createQR():
-	url = getKeyboard('', "%s: Insert the URL for the QRCode." % ADDONTITLE)
-	if url == "": LogNotify("[COLOR %s]Create QR[/COLOR]" % COLOR1, '[COLOR %s]Create QR Code Cancelled![/COLOR]' % COLOR2); return
-	if not url.startswith('http://') and not url.startswith('https://'): LogNotify("[COLOR %s]Create QR[/COLOR]" % COLOR1, '[COLOR %s]Not a Valid URL![/COLOR]' % COLOR2); return
-	if url == 'http://' or url == 'https://': LogNotify("[COLOR %s]Create QR[/COLOR]" % COLOR1, '[COLOR %s]Not a Valid URL![/COLOR]' % COLOR2); return
+	url = getKeyboard('', "{0}: Insert the URL for the QRCode.".format(ADDONTITLE))
+	if url == "":
+		LogNotify("[COLOR {0}]Create QR[/COLOR]".format(COLOR1), '[COLOR {0}]Create QR Code Cancelled![/COLOR]'.format(COLOR2))
+		return
+	if not url.startswith('http://') and not url.startswith('https://'):
+		LogNotify("[COLOR {0}]Create QR[/COLOR]".format(COLOR1), '[COLOR {0}]Not a Valid URL![/COLOR]'.format(COLOR2))
+		return
+	if url == 'http://' or url == 'https://':
+		LogNotify("[COLOR {0}]Create QR[/COLOR]".format(COLOR1), '[COLOR {0}]Not a Valid URL![/COLOR]'.format(COLOR2))
+		return
 	working = workingURL(url)
 	if not working:
-		if not DIALOG.yesno(ADDONTITLE, "[COLOR %s]It seems the your enter isnt working, Would you like to create it anyways?[/COLOR]" % COLOR2, "[COLOR %s]%s[/COLOR]" % (COLOR1, working), yeslabel="[B][COLOR red]Yes Create[/COLOR][/B]", nolabel="[B][COLOR springgreen]No Cancel[/COLOR][/B]"):
+		if not DIALOG.yesno(ADDONTITLE,
+							"[COLOR {0}]It seems the URL you entered isn't working, Would you like to create it anyways?[/COLOR]".format(COLOR2),
+							"[COLOR {0}]{1}[/COLOR]".format(COLOR1, working),
+							yeslabel="[B][COLOR red]Yes Create[/COLOR][/B]",
+							nolabel="[B][COLOR springgreen]No Cancel[/COLOR][/B]"):
 			return
-	name = getKeyboard('', "%s: Insert the name for the QRCode." % ADDONTITLE)
-	name = "QrImage_%s" % id_generator(6) if name == "" else name
+	name = getKeyboard('', "{0}: Insert the name for the QRCode.".format(ADDONTITLE))
+	name = "QrImage_{0}".format(id_generator(6)) if name == "" else name
 	image = generateQR(url, name)
-	DIALOG.ok(ADDONTITLE, "[COLOR %s]The QRCode image has been created and is located in the addondata directory:[/COLOR]" % COLOR2, "[COLOR %s]%s[/COLOR]" % (COLOR1, image.replace(HOME, '')))
+	DIALOG.ok(ADDONTITLE,
+				"[COLOR {0}]The QRCode image has been created and is located in the addon_data directory:[/COLOR]".format(COLOR2),
+				"[COLOR {0}]{1}[/COLOR]".format(COLOR1, image.replace(HOME, '')))
+
 
 def cleanupBackup():
 	mybuilds = xbmc.translatePath(MYBUILDS)
 	folder = glob.glob(os.path.join(mybuilds, "*"))
-	list = []; filelist = []
+	list = []
+	filelist = []
 	if len(folder) == 0:
-		LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Backup Location: Empty[/COLOR]" % (COLOR2))
+		LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]Backup Location: Empty[/COLOR]".format(COLOR2))
 		return
 	for item in sorted(folder, key=os.path.getmtime):
 		filelist.append(item)
 		base = item.replace(mybuilds, '')
 		if os.path.isdir(item):
-			list.append('/%s/' % base)
+			list.append('/{0}/'.format(base))
 		elif os.path.isfile(item):
 			list.append(base)
 	list = ['--- Remove All Items ---'] + list
-	selected = DIALOG.select("%s: Select the items to remove from 'MyBuilds'." % ADDONTITLE, list)
+	selected = DIALOG.select("{0}: Select the items to remove from 'MyBuilds'.".format(ADDONTITLE), list)
 
 	if selected == -1:
-		LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Clean Up Cancelled![/COLOR]" % COLOR2)
+		LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]Clean Up Cancelled![/COLOR]".format(COLOR2))
 	elif selected == 0:
-		if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to clean up all items in your 'My_Builds' folder?[/COLOR]" % COLOR2, "[COLOR %s]%s[/COLOR]" % (COLOR1, MYBUILDS), yeslabel="[B][COLOR springgreen]Clean Up[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
+		if DIALOG.yesno(ADDONTITLE, "[COLOR {0}]Would you like to clean up all items in your 'My_Builds' folder?[/COLOR]".format(COLOR2),
+						"[COLOR {0}]{1}[/COLOR]".format(COLOR1, MYBUILDS),
+						yeslabel="[B][COLOR springgreen]Clean Up[/COLOR][/B]",
+						nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
 			clearedfiles, clearedfolders = cleanHouse(xbmc.translatePath(MYBUILDS))
-			LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Removed Files: [COLOR %s]%s[/COLOR] / Folders:[/COLOR] [COLOR %s]%s[/COLOR]" % (COLOR2, COLOR1, clearedfiles, COLOR1, clearedfolders))
+			LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE),
+					  "[COLOR {0}]Removed Files: [COLOR {1}]{2}[/COLOR] / Folders:[/COLOR] [COLOR {3}]{4}[/COLOR]".format(COLOR2, COLOR1, clearedfiles, COLOR1, clearedfolders))
 		else:
-			LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Clean Up Cancelled![/COLOR]" % COLOR2)
+			LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]Clean Up Cancelled![/COLOR]".format(COLOR2))
 	else:
-		path = filelist[selected-1]; passed = False
-		if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to remove [COLOR %s]%s[/COLOR] from 'My_Builds' folder?[/COLOR]" % (COLOR2, COLOR1, list[selected]), "[COLOR %s]%s[/COLOR]" % (COLOR1, path), yeslabel="[B][COLOR springgreen]Clean Up[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
+		path = filelist[selected-1]
+		passed = False
+		if DIALOG.yesno(ADDONTITLE, "[COLOR {0}]Would you like to remove [COLOR {1}]{2}[/COLOR] from 'My_Builds' folder?[/COLOR]".format(COLOR2, COLOR1, list[selected]),
+						"[COLOR {0}]{1}[/COLOR]".format(COLOR1, path),
+						yeslabel="[B][COLOR springgreen]Clean Up[/COLOR][/B]",
+						nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
 			if os.path.isfile(path):
 				try:
 					os.remove(path)
 					passed = True
 				except:
-					log("Unable to remove: %s" % path)
+					log("Unable to remove: {0}".format(path))
 			else:
 				cleanHouse(path)
 				try:
 					shutil.rmtree(path)
 					passed = True
-				except Exception as e:
-					log("Error removing %s" % path, xbmc.LOGNOTICE)
-			if passed: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]%s Removed![/COLOR]" % (COLOR2, list[selected]))
-			else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Error Removing %s![/COLOR]" % (COLOR2, list[selected]))
+				except:
+					log("Error removing {0}".format(path), xbmc.LOGNOTICE)
+			if passed:
+				LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]{1} Removed![/COLOR]".format(COLOR2, list[selected]))
+			else:
+				LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]Error Removing {1}![/COLOR]".format(COLOR2, list[selected]))
 		else:
-			LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Clean Up Cancelled![/COLOR]" % COLOR2)
+			LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]Clean Up Cancelled![/COLOR]".format(COLOR2))
+
 
 def getCond(type):
 	return xbmc.getCondVisibility(type)
 
+
 def ebi(proc):
 	xbmc.executebuiltin(proc)
 
+
 def refresh():
 	ebi('Container.Refresh()')
+
 
 def splitNotify(notify):
 	link = openURL(notify).replace('\r','').replace('\t','').replace('\n', '[CR]')
@@ -2315,7 +2466,7 @@ def clearArchive():
 def clearFunctionCache():
 	if xbmc.getCondVisibility('System.HasAddon(script.module.resolveurl)'): xbmc.executebuiltin('RunPlugin(plugin://script.module.resolveurl/?mode=reset_cache)')
 	if xbmc.getCondVisibility('System.HasAddon(script.module.urlresolver)'): xbmc.executebuiltin('RunPlugin(plugin://script.module.urlresolver/?mode=reset_cache)')
-        
+
 def clearCache(over=None):
 	PROFILEADDONDATA = os.path.join(PROFILE,'addon_data')
 	dbfiles   = [
