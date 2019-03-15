@@ -1138,7 +1138,7 @@ def clearCrash():
 
 
 def hidePassword():
-	if DIALOG.yesno(ADDONTITLE, "[COLOR {0}]Would you like to [COLOR {1}]hide[/COLOR] all passwords when typing in the add-on settings menus?[/COLOR]".format(COLOR1, COLOR2),
+	if DIALOG.yesno(ADDONTITLE, "[COLOR {0}]Would you like to [COLOR {1}]hide[/COLOR] all passwords when typing in the add-on settings menus?[/COLOR]".format(COLOR2, COLOR1),
 					yeslabel="[B][COLOR springgreen]Hide Passwords[/COLOR][/B]",
 					nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
 		count = 0
@@ -1167,7 +1167,9 @@ def hidePassword():
 
 
 def unhidePassword():
-	if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to [COLOR %s]unhide[/COLOR] all passwords when typing in the add-on settings menus?[/COLOR]" % (COLOR2, COLOR1), yeslabel="[B][COLOR springgreen]Unhide Passwords[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
+	if DIALOG.yesno(ADDONTITLE, "[COLOR {0}]Would you like to [COLOR {1}]unhide[/COLOR] all passwords when typing in the add-on settings menus?[/COLOR]".format(COLOR2, COLOR1),
+					yeslabel="[B][COLOR springgreen]Unhide Passwords[/COLOR][/B]",
+					nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
 		count = 0
 		for folder in glob.glob(os.path.join(ADDONS, '*/')):
 			sett = os.path.join(folder, 'resources', 'settings.xml')
@@ -1181,13 +1183,17 @@ def unhidePassword():
 								change = line.replace('option="hidden"', '')
 								f.replace(line, change)
 								count += 1
-								log("[Unhide Passwords] found in %s on %s" % (sett.replace(HOME, ''), line), xbmc.LOGDEBUG)
+								log("[Unhide Passwords] found in {0} on {1}".format(sett.replace(HOME, ''), line), xbmc.LOGDEBUG)
 							except:
 								pass
-				f2 = open(sett, mode='w'); f2.write(f); f2.close()
-		LogNotify("[COLOR %s]Unhide Passwords[/COLOR]" % COLOR1, "[COLOR %s]%s items changed[/COLOR]" % (COLOR2, count))
-		log("[Unhide Passwords] %s items changed" % count, xbmc.LOGNOTICE)
-	else: log("[Unhide Passwords] Cancelled", xbmc.LOGNOTICE)
+				f2 = open(sett, mode='w')
+				f2.write(f)
+				f2.close()
+		LogNotify("[COLOR {0}]Unhide Passwords[/COLOR]".format(COLOR1), "[COLOR {0}]{1} items changed[/COLOR]".format(COLOR2, count))
+		log("[Unhide Passwords] {0} items changed".format(count), xbmc.LOGNOTICE)
+	else:
+		log("[Unhide Passwords] Cancelled", xbmc.LOGNOTICE)
+
 
 def wizardUpdate(startup=None):
 	if workingURL(WIZARDFILE):
@@ -1196,36 +1202,44 @@ def wizardUpdate(startup=None):
 		except:
 			return
 		if ver > VERSION:
-			yes = DIALOG.yesno(ADDONTITLE, '[COLOR %s]There is a new version of the [COLOR %s]%s[/COLOR]!' % (COLOR2, COLOR1, ADDONTITLE), 'Would you like to download [COLOR %s]v%s[/COLOR]?[/COLOR]' % (COLOR1, ver), nolabel='[B][COLOR red]Remind Me Later[/COLOR][/B]', yeslabel="[B][COLOR springgreen]Update Wizard[/COLOR][/B]")
-			if yes:
-				log("[Auto Update Wizard] Installing wizard v%s" % ver, xbmc.LOGNOTICE)
-				DP.create(ADDONTITLE,'[COLOR %s]Downloading Update...' % COLOR2,'', 'Please Wait[/COLOR]')
-				lib=os.path.join(PACKAGES, '%s-%s.zip' % (ADDON_ID, ver))
-				try: os.remove(lib)
-				except: pass
+			if DIALOG.yesno(ADDONTITLE, '[COLOR {0}]There is a new version of the [COLOR {1}]{2}[/COLOR]!'.format(COLOR2, COLOR1, ADDONTITLE),
+								'Would you like to download [COLOR {0}]v{1}[/COLOR]?[/COLOR]'.format(COLOR1, ver),
+								nolabel='[B][COLOR red]Remind Me Later[/COLOR][/B]',
+								yeslabel="[B][COLOR springgreen]Update Wizard[/COLOR][/B]"):
+				log("[Auto Update Wizard] Installing wizard v{0}".format(ver), xbmc.LOGNOTICE)
+				DP.create(ADDONTITLE, '[COLOR {0}]Downloading Update...'.format(COLOR2), '', 'Please Wait[/COLOR]')
+				lib = os.path.join(PACKAGES, '{0}-{1}.zip'.format(ADDON_ID, ver))
+				try:
+					os.remove(lib)
+				except:
+					pass
 				downloader.download(zip, lib, DP)
 				xbmc.sleep(2000)
-				DP.update(0,"", "Installing %s update" % ADDONTITLE)
+				DP.update(0, "", "Installing {0} update".format(ADDONTITLE))
 				percent, errors, error = extract.all(lib, ADDONS, DP, True)
 				DP.close()
 				xbmc.sleep(1000)
 				ebi('UpdateAddonRepos()')
 				ebi('UpdateLocalAddons()')
 				xbmc.sleep(1000)
-				LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE),'[COLOR %s]Add-on updated[/COLOR]' % COLOR2)
-				log("[Auto Update Wizard] Wizard updated to v%s" % ver, xbmc.LOGNOTICE)
+				LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), '[COLOR {0}]Add-on updated[/COLOR]'.format(COLOR2))
+				log("[Auto Update Wizard] Wizard updated to v{0}".format(ver), xbmc.LOGNOTICE)
 				removeFile(os.path.join(ADDONDATA, 'settings.xml'))
 				notify.firstRunSettings()
-				#reloadProfile()
-				if startup:
-					ebi('RunScript(%s/startup.py)' % PLUGIN)
-				return
-			else: log("[Auto Update Wizard] Install New Wizard Ignored: %s" % ver, xbmc.LOGNOTICE)
-		else:
-			if not startup: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]No New Version of Wizard[/COLOR]" % COLOR2)
-			log("[Auto Update Wizard] No New Version v%s" % ver, xbmc.LOGNOTICE)
-	else: log("[Auto Update Wizard] Url for wizard file not valid: %s" % WIZARDFILE, xbmc.LOGNOTICE)
 
+				if startup:
+					ebi('RunScript({0}/startup.py)'.format(PLUGIN))
+				return
+			else:
+				log("[Auto Update Wizard] Install New Wizard Ignored: {0}".format(ver), xbmc.LOGNOTICE)
+		else:
+			if not startup:
+				LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]No New Version of Wizard[/COLOR]".format(COLOR2))
+			log("[Auto Update Wizard] No New Version v{0}".format(ver), xbmc.LOGNOTICE)
+	else:
+		log("[Auto Update Wizard] URL for wizard file not valid: {0}".format(WIZARDFILE), xbmc.LOGNOTICE)
+
+# TODO: Remove this functionality to further enforce proper builds.txt formatting?
 def convertText():
 	TEXTFILES = os.path.join(ADDONDATA, 'TextFiles')
 	if not os.path.exists(TEXTFILES): os.makedirs(TEXTFILES)
@@ -1390,21 +1404,19 @@ def convertText():
 	DP.close()
 	DIALOG.ok(ADDONTITLE, '[COLOR %s]Your text files have been converted to 0.1.7 and are location in the [COLOR %s]/addon_data/%s/[/COLOR] folder[/COLOR]' % (COLOR2, COLOR1, ADDON_ID))
 
+
 def reloadProfile(profile=None):
-	if profile == None:
-		#if os.path.exists(PROFILES):
-		#	profile = getInfo('System.ProfileName')
-		#	log("Profile: %s" % profile)
-		#	ebi('LoadProfile(%s)' % profile)
-		#else:
-		#ebi('Mastermode')
+	if profile is None:
 		ebi('LoadProfile(Master user)')
-	else: ebi('LoadProfile(%s)' % profile)
+	else:
+		ebi('LoadProfile({0})'.format(profile))
+
 
 def chunks(s, n):
 	for start in range(0, len(s), n):
 		yield s[start:start+n]
 
+# TODO: Cleanup this method
 def asciiCheck(use=None, over=False):
 	if use is None:
 		source = DIALOG.browse(3, '[COLOR %s]Select the folder you want to scan[/COLOR]' % COLOR2, 'files', '', False, False, HOME)
@@ -1484,8 +1496,9 @@ def asciiCheck(use=None, over=False):
 			TextBox(ADDONTITLE, "[COLOR yellow][B]%s Files Found:[/B][/COLOR]\n %s" % (f1, msg))
 	else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]ASCII Check: None Found.[/COLOR]" % COLOR2)
 
+
 def fileCount(home, excludes=True):
-	exclude_dirs  = [ADDON_ID, 'cache', 'system', 'packages', 'Thumbnails', 'peripheral_data', 'temp', 'My_Builds', 'library', 'keymaps']
+	exclude_dirs = [ADDON_ID, 'cache', 'system', 'packages', 'Thumbnails', 'peripheral_data', 'temp', 'My_Builds', 'library', 'keymaps']
 	exclude_files = ['Textures13.db', '.DS_Store', 'advancedsettings.xml', 'Thumbs.db', '.gitignore']
 	item = []
 	for base, dirs, files in os.walk(home):
@@ -1496,6 +1509,7 @@ def fileCount(home, excludes=True):
 			item.append(file)
 	return len(item)
 
+# TODO: Cleanup skin checks
 def defaultSkin():
 	log("[Default Skin Check]", xbmc.LOGNOTICE)
 	tempgui = os.path.join(USERDATA, 'guitemp.xml')
@@ -1527,6 +1541,7 @@ def defaultSkin():
 		os.remove(tempgui)
 	log("[Default Skin Check] End", xbmc.LOGNOTICE)
 
+
 def lookandFeelData(do='save'):
 	scan = ['lookandfeel.enablerssfeeds', 'lookandfeel.font', 'lookandfeel.rssedit', 'lookandfeel.skincolors', 'lookandfeel.skintheme', 'lookandfeel.skinzoom', 'lookandfeel.soundskin', 'lookandfeel.startupwindow', 'lookandfeel.stereostrength']
 	if do == 'save':
@@ -1544,14 +1559,16 @@ def lookandFeelData(do='save'):
 			response = xbmc.executeJSONRPC(query)
 			log("%s restored to %s" % (item, value), xbmc.LOGNOTICE)
 
+
 def sep(middle=''):
 	char = uservar.SPACER
 	ret = char * 40
 	if not middle == '':
 		middle = '[ %s ]' % middle
 		fluff = int((40 - len(middle))/2)
-		ret = "%s%s%s" % (ret[:fluff], middle, ret[:fluff+2])
+		ret = "{0}{1}[2}".format(ret[:fluff], middle, ret[:fluff+2])
 	return ret[:40]
+
 
 def convertAdvanced():
 	if os.path.exists(ADVANCED):
@@ -1561,16 +1578,20 @@ def convertAdvanced():
 			return
 		else:
 			return
-	else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]AdvancedSettings.xml not found[/COLOR]")
+	else:
+		LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE),
+				  "[COLOR {0}]AdvancedSettings.xml not found[/COLOR]".format(COLOR1))
+
 
 ##########################
-###BACK UP/RESTORE #######
+#    BACK UP/RESTORE     #
 ##########################
+
+
 def backUpOptions(type, name=""):
-	exclude_dirs  = [ADDON_ID, 'cache', 'system', 'Thumbnails', 'peripheral_data', 'temp', 'My_Builds', 'keymaps', 'cdm']
+	exclude_dirs = [ADDON_ID, 'cache', 'system', 'Thumbnails', 'peripheral_data', 'temp', 'My_Builds', 'keymaps', 'cdm']
 	exclude_files = ['Textures13.db', '.DS_Store', 'advancedsettings.xml', 'Thumbs.db', '.gitignore']
-	## TODO: fix these
-	bad_files     = [
+	bad_files = [
 					(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.db')),
 					(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.meta.5.db')),
 					(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.providers.13.db')),
@@ -1592,11 +1613,13 @@ def backUpOptions(type, name=""):
 					(os.path.join(ADDOND, 'plugin.video.seren', 'torrentScrape.db')),
 					(os.path.join(ADDOND, 'script.module.simplecache', 'simplecache.db'))]
 
-	backup   = xbmc.translatePath(BACKUPLOCATION)
+	backup = xbmc.translatePath(BACKUPLOCATION)
 	mybuilds = xbmc.translatePath(MYBUILDS)
 	try:
-		if not os.path.exists(backup): xbmcvfs.mkdirs(backup)
-		if not os.path.exists(mybuilds): xbmcvfs.mkdirs(mybuilds)
+		if not os.path.exists(backup):
+			xbmcvfs.mkdirs(backup)
+		if not os.path.exists(mybuilds):
+			xbmcvfs.mkdirs(mybuilds)
 	except Exception as e:
 		DIALOG.ok(ADDONTITLE, "[COLOR %s]Error making Back Up directories:[/COLOR]" % (COLOR2), "[COLOR %s]%s[/COLOR]" % (COLOR1, str(e)))
 		return
@@ -2221,51 +2244,57 @@ def restoreExternal(type):
 	if todo == 1: reloadFix()
 	else: killxbmc(True)
 
-def extractAZip():
-	return
+
 ##########################
-###DETERMINE PLATFORM#####
+#   DETERMINE PLATFORM   #
 ##########################
 
+
 def platform():
-	if xbmc.getCondVisibility('system.platform.android'):             return 'android'
-	elif xbmc.getCondVisibility('system.platform.linux'):             return 'linux'
+	if xbmc.getCondVisibility('system.platform.android'): return 'android'
+	elif xbmc.getCondVisibility('system.platform.linux'): return 'linux'
 	elif xbmc.getCondVisibility('system.platform.linux.Raspberrypi'): return 'linux'
-	elif xbmc.getCondVisibility('system.platform.windows'):           return 'windows'
-	elif xbmc.getCondVisibility('system.platform.osx'):               return 'osx'
-	elif xbmc.getCondVisibility('system.platform.atv2'):              return 'atv2'
-	elif xbmc.getCondVisibility('system.platform.ios'):               return 'ios'
-	elif xbmc.getCondVisibility('system.platform.darwin'):            return 'ios'
+	elif xbmc.getCondVisibility('system.platform.windows'): return 'windows'
+	elif xbmc.getCondVisibility('system.platform.osx'): return 'osx'
+	elif xbmc.getCondVisibility('system.platform.atv2'): return 'atv2'
+	elif xbmc.getCondVisibility('system.platform.ios'): return 'ios'
+	elif xbmc.getCondVisibility('system.platform.darwin'): return 'ios'
+
 
 def Grab_Log(file=False, old=False, wizard=False):
 	if wizard:
-		if not os.path.exists(WIZLOG): return False
+		if not os.path.exists(WIZLOG):
+			return False
 		else:
 			if file:
 				return WIZLOG
 			else:
-				filename    = open(WIZLOG, 'r')
-				logtext     = filename.read()
+				filename = open(WIZLOG, 'r')
+				logtext = filename.read()
 				filename.close()
 				return logtext
-	finalfile   = 0
+	finalfile = 0
 	logfilepath = os.listdir(LOG)
-	logsfound   = []
+	logsfound = []
 
 	for item in logfilepath:
-		if old and item.endswith('.old.log'): logsfound.append(os.path.join(LOG, item))
-		elif not old and item.endswith('.log') and not item.endswith('.old.log'): logsfound.append(os.path.join(LOG, item))
+		if old and item.endswith('.old.log'):
+			logsfound.append(os.path.join(LOG, item))
+		elif not old and item.endswith('.log') and not item.endswith('.old.log'):
+			logsfound.append(os.path.join(LOG, item))
 
 	if len(logsfound) > 0:
 		logsfound.sort(key=lambda f: os.path.getmtime(f))
-		if file: return logsfound[-1]
+		if file:
+			return logsfound[-1]
 		else:
-			filename    = open(logsfound[-1], 'r')
-			logtext     = filename.read()
+			filename = open(logsfound[-1], 'r')
+			logtext = filename.read()
 			filename.close()
 			return logtext
 	else:
 		return False
+
 
 def whiteList(do):
 	backup   = xbmc.translatePath(BACKUPLOCATION)
@@ -2478,18 +2507,22 @@ def clearPackagesStartup():
 			log("Clear Packages Error: %s" % str(e), xbmc.LOGERROR)
 	else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Packages: None Found![/COLOR]' % COLOR2)
 
+
 def clearArchive():
 	if os.path.exists(ARCHIVE_CACHE):
 		cleanHouse(ARCHIVE_CACHE)
 
+
 def clearFunctionCache():
-	if xbmc.getCondVisibility('System.HasAddon(script.module.resolveurl)'): xbmc.executebuiltin('RunPlugin(plugin://script.module.resolveurl/?mode=reset_cache)')
-	if xbmc.getCondVisibility('System.HasAddon(script.module.urlresolver)'): xbmc.executebuiltin('RunPlugin(plugin://script.module.urlresolver/?mode=reset_cache)')
+	if xbmc.getCondVisibility('System.HasAddon(script.module.resolveurl)'):
+		xbmc.executebuiltin('RunPlugin(plugin://script.module.resolveurl/?mode=reset_cache)')
+	if xbmc.getCondVisibility('System.HasAddon(script.module.urlresolver)'):
+		xbmc.executebuiltin('RunPlugin(plugin://script.module.urlresolver/?mode=reset_cache)')
+
 
 def clearCache(over=None):
-	PROFILEADDONDATA = os.path.join(PROFILE,'addon_data')
-	dbfiles   = [
-		## TODO: Double check these
+	PROFILEADDONDATA = os.path.join(PROFILE, 'addon_data')
+	dbfiles = [
 		(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.db')),
 		(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.meta.5.db')),
 		(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.providers.13.db')),
@@ -2512,16 +2545,16 @@ def clearCache(over=None):
 		(os.path.join(ADDOND, 'script.module.simplecache', 'simplecache.db'))]
 
 	cachelist = [
-		(PROFILEADDONDATA),
-		(ADDOND),
-		(os.path.join(HOME,'cache')),
-		(os.path.join(HOME,'temp')),
+		PROFILEADDONDATA,
+		ADDOND,
+		(os.path.join(HOME, 'cache')),
+		(os.path.join(HOME, 'temp')),
 		(os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'Other')),
 		(os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'LocalAndRental')),
-		(os.path.join(ADDOND,'script.module.simple.downloader')),
-		(os.path.join(ADDOND,'plugin.video.itv','Images')),
+		(os.path.join(ADDOND, 'script.module.simple.downloader')),
+		(os.path.join(ADDOND, 'plugin.video.itv', 'Images')),
 		(os.path.join(PROFILEADDONDATA,'script.module.simple.downloader')),
-		(os.path.join(PROFILEADDONDATA,'plugin.video.itv','Images')),
+		(os.path.join(PROFILEADDONDATA,'plugin.video.itv', 'Images')),
 		(os.path.join(ADDOND, 'script.extendedinfo', 'images')),
 		(os.path.join(ADDOND, 'script.extendedinfo', 'TheMovieDB')),
 		(os.path.join(ADDOND, 'script.extendedinfo', 'YouTube')),
@@ -2540,21 +2573,21 @@ def clearCache(over=None):
 				file_count += len(files)
 				if file_count > 0:
 					for f in files:
-						if not f in LOGFILES:
+						if f not in LOGFILES:
 							try:
 								os.unlink(os.path.join(root, f))
-								log("[Wiped] %s" % os.path.join(root, f), xbmc.LOGNOTICE)
+								log("[Wiped] {0}".format(os.path.join(root, f)), xbmc.LOGNOTICE)
 								delfiles += 1
 							except:
 								pass
-						else: log('Ignore Log File: %s' % f, xbmc.LOGNOTICE)
+						else: log('Ignore Log File: {0}'.format(f), xbmc.LOGNOTICE)
 					for d in dirs:
 						try:
 							shutil.rmtree(os.path.join(root, d))
 							delfiles += 1
-							log("[Success] cleared %s files from %s" % (str(file_count), os.path.join(item,d)), xbmc.LOGNOTICE)
+							log("[Success] cleared {0} files from {1}".format(str(file_count), os.path.join(item, d)), xbmc.LOGNOTICE)
 						except:
-							log("[Failed] to wipe cache in: %s" % os.path.join(item,d), xbmc.LOGNOTICE)
+							log("[Failed] to wipe cache in: {0}".format(os.path.join(item, d)), xbmc.LOGNOTICE)
 		else:
 			for root, dirs, files in os.walk(item):
 				dirs[:] = [d for d in dirs if d not in excludes]
@@ -2563,14 +2596,14 @@ def clearCache(over=None):
 						try:
 							shutil.rmtree(os.path.join(root, d))
 							delfiles += 1
-							log("[Success] wiped %s " % os.path.join(root,d), xbmc.LOGNOTICE)
+							log("[Success] wiped {0}".format(os.path.join(root, d)), xbmc.LOGNOTICE)
 						except:
-							log("[Failed] to wipe cache in: %s" % os.path.join(item,d), xbmc.LOGNOTICE)
+							log("[Failed] to wipe cache in: {0}".format(os.path.join(item, d)), xbmc.LOGNOTICE)
 	if INCLUDEVIDEO == 'true' and over is None:
 		files = []
-		if INCLUDEALL == 'true': files = dbfiles
+		if INCLUDEALL == 'true':
+			files = dbfiles
 		else:
-			## TODO: Double check these
 			if INCLUDEPLACENTA == 'true':
 				files.append(os.path.join(ADDOND, 'plugin.video.placenta', 'cache.db'))
 				files.append(os.path.join(ADDOND, 'plugin.video.placenta', 'meta.5.db'))
@@ -2605,7 +2638,7 @@ def clearCache(over=None):
 						textdb = database.connect(item)
 						textexe = textdb.cursor()
 					except Exception as e:
-						log("DB Connection error: %s" % str(e), xbmc.LOGERROR)
+						log("DB Connection error: {0}".format(str(e)), xbmc.LOGERROR)
 						continue
 					if 'Database' in item:
 						try:
@@ -2613,25 +2646,27 @@ def clearCache(over=None):
 							textexe.execute("VACUUM")
 							textdb.commit()
 							textexe.close()
-							log("[Success] wiped %s" % item, xbmc.LOGNOTICE)
+							log("[Success] wiped {0}".format(item), xbmc.LOGNOTICE)
 						except Exception as e:
-							log("[Failed] wiped %s: %s" % (item, str(e)), xbmc.LOGNOTICE)
+							log("[Failed] wiped {0}: {1}".format(item, str(e)), xbmc.LOGNOTICE)
 					else:
 						textexe.execute("SELECT name FROM sqlite_master WHERE type = 'table'")
 						for table in textexe.fetchall():
 							try:
-								textexe.execute("DELETE FROM %s" % table[0])
+								textexe.execute("DELETE FROM {0}".format(table[0]))
 								textexe.execute("VACUUM")
 								textdb.commit()
-								log("[Success] wiped %s in %s" % (table[0], item), xbmc.LOGNOTICE)
+								log("[Success] wiped {0} in {1}".format(table[0], item), xbmc.LOGNOTICE)
 							except Exception as e:
 								try:
-									log("[Failed] wiped %s in %s: %s" % (table[0], item, str(e)), xbmc.LOGNOTICE)
+									log("[Failed] wiped {0} in {1}: {2}".format(table[0], item, str(e)), xbmc.LOGNOTICE)
 								except:
 									pass
 						textexe.close()
-		else: log("Clear Cache: Clear Video Cache Not Enabled", xbmc.LOGNOTICE)
-	LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Cache: Removed %s Files[/COLOR]' % (COLOR2, delfiles))
+		else:
+			log("Clear Cache: Clear Video Cache Not Enabled", xbmc.LOGNOTICE)
+	LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), '[COLOR {0}]Clear Cache: Removed {1} Files[/COLOR]'.format(COLOR2, delfiles))
+
 
 def checkSources():
 	if not os.path.exists(SOURCES):
@@ -2722,24 +2757,35 @@ def checkRepos():
 		LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]All Repositories Working![/COLOR]" % COLOR2)
 
 #############################
-####KILL XBMC ###############
-#####THANKS BRACKETS ########
+#       KILL XBMC           #
+#############################
+
 
 def killxbmc(over=None):
-	if over: choice = 1
-	else: choice = DIALOG.yesno('Force Close Kodi', '[COLOR %s]You are about to close Kodi' % COLOR2, 'Would you like to continue?[/COLOR]', nolabel='[B][COLOR red] No Cancel[/COLOR][/B]',yeslabel='[B][COLOR springgreen]Force Close Kodi[/COLOR][/B]')
+	if over:
+		choice = 1
+	else:
+		choice = DIALOG.yesno('Force Close Kodi', '[COLOR {0}]You are about to close Kodi'.format(COLOR2),
+							  'Would you like to continue?[/COLOR]',
+							  nolabel='[B][COLOR red] No Cancel[/COLOR][/B]',
+							  yeslabel='[B][COLOR springgreen]Force Close Kodi[/COLOR][/B]')
 	if choice == 1:
-		log("Force Closing Kodi: Platform[%s]" % str(platform()), xbmc.LOGNOTICE)
+		log("Force Closing Kodi: Platform[{0}]".format(str(platform())), xbmc.LOGNOTICE)
 		os._exit(1)
 
+
 def redoThumbs():
-	if not os.path.exists(THUMBS): os.makedirs(THUMBS)
+	if not os.path.exists(THUMBS):
+		os.makedirs(THUMBS)
 	thumbfolders = '0123456789abcdef'
 	videos = os.path.join(THUMBS, 'Video', 'Bookmarks')
 	for item in thumbfolders:
 		foldname = os.path.join(THUMBS, item)
-		if not os.path.exists(foldname): os.makedirs(foldname)
-	if not os.path.exists(videos): os.makedirs(videos)
+		if not os.path.exists(foldname):
+			os.makedirs(foldname)
+	if not os.path.exists(videos):
+		os.makedirs(videos)
+
 
 def reloadFix(default=None):
 	DIALOG.ok(ADDONTITLE, "[COLOR %s]WARNING: Sometimes Reloading the Profile causes Kodi to crash.  While Kodi is Reloading the Profile Please Do Not Press Any Buttons![/COLOR]" % COLOR2)
@@ -2760,11 +2806,13 @@ def reloadFix(default=None):
 	forceUpdate()
 	ebi("ReloadSkin()")
 
+# TODO: Cleanup skin checks
 def skinToDefault(title):
 	if not currSkin() in ['skin.confluence', 'skin.estuary']:
 		skin = 'skin.confluence' if KODIV < 17 else 'skin.estuary'
 	return swapSkins(skin, title)
 
+# TODO: Cleanup skin checks
 def swapSkins(goto, title="Error"):
 	skinSwitch.swapSkins(goto)
 	x = 0
@@ -2779,6 +2827,7 @@ def swapSkins(goto, title="Error"):
 	else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]%s: Skin Swap Timed Out![/COLOR]' % (COLOR2, title)); return False
 	return True
 
+
 def mediaCenter():
 	if str(HOME).lower().find('kodi'):
 		return 'Kodi'
@@ -2786,6 +2835,7 @@ def mediaCenter():
 		return 'SPMC'
 	else:
 		return 'Unknown Fork'
+
 
 def kodi17Fix():
 	addonlist = glob.glob(os.path.join(ADDONS, '*/'))
@@ -2813,6 +2863,7 @@ def kodi17Fix():
 		LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Enabling Addons Complete![/COLOR]" % COLOR2)
 	forceUpdate()
 	ebi("ReloadSkin()")
+
 
 def addonDatabase(addon=None, state=1, array=False):
 	dbfile = latestDB('Addons')
@@ -2847,46 +2898,54 @@ def addonDatabase(addon=None, state=1, array=False):
 	except:
 		log("Erroring enabling addon: %s" % addon)
 
+
 def data_type(str):
 	datatype = type(str).__name__
 	return datatype
 
+# TODO: Cleanup up speedtest and network info sections
 def net_info():
 	import json
-	infoLabel = ['Network.IPAddress',
-				 'Network.MacAddress',]
-	data      = []; x = 0
+	infoLabel = ['Network.IPAddress', 'Network.MacAddress']
+	data = []
+	x = 0
 	for info in infoLabel:
 		temp = getInfo(info)
 		y = 0
 		while temp == "Busy" and y < 10:
-			temp = getInfo(info); y += 1; log("%s sleep %s" % (info, str(y))); xbmc.sleep(200)
+			temp = getInfo(info)
+			y += 1
+			log("{0} sleep {1}".format(info, str(y)))
+			xbmc.sleep(200)
 		data.append(temp)
 		x += 1
 	try:
 		url = 'http://extreme-ip-lookup.com/json/'
-		req = urllib2.Request(url)
+		req = urllib.request.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-		response = urllib2.urlopen(req)
+		response = urllib.request.urlopen(req)
 		geo = json.load(response)
 	except:
 		url = 'http://ip-api.com/json'
-		req = urllib2.Request(url)
+		req = urllib.request.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-		response = urllib2.urlopen(req)
+		response = urllib.request.urlopen(req)
 		geo = json.load(response)
 	mac = data[1]
 	inter_ip = data[0]
-	ip=geo['query']
-	isp=geo['org']
+	ip = geo['query']
+	isp = geo['org']
 	city = geo['city']
-	country=geo['country']
-	state=geo['region']
-	return mac,inter_ip,ip,city,state,country,isp
+	country = geo['country']
+	state = geo['region']
+	return mac, inter_ip, ip, city, state, country, isp
+
 
 ##########################
-### PURGE DATABASE #######
+#    PURGE DATABASE      #
 ##########################
+
+
 def purgeDb(name):
 	#dbfile = name.replace('.db','').translate(None, digits)
 	#if dbfile not in ['Addons', 'ADSP', 'Epg', 'MyMusic', 'MyVideos', 'Textures', 'TV', 'ViewModes']: return False
