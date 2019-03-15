@@ -1083,49 +1083,64 @@ def splitNotify(notify):
 	if msg.startswith('[CR]'): msg = msg[4:]
 	return id.replace('[CR]', ''), msg
 
+
 def forceUpdate(silent=False):
 	ebi('UpdateAddonRepos()')
 	ebi('UpdateLocalAddons()')
-	if not silent: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Forcing Addon Updates[/COLOR]' % COLOR2)
+	if not silent:
+		LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), '[COLOR {0}]Forcing Addon Updates[/COLOR]'.format(COLOR2))
+
 
 def convertSpecial(url, over=False):
-	total = fileCount(url); start = 0
-	DP.create(ADDONTITLE, "[COLOR %s]Changing Physical Paths To Special" % COLOR2, "", "Please Wait[/COLOR]")
+	total = fileCount(url)
+	start = 0
+	DP.create(ADDONTITLE, "[COLOR {0}]Changing Physical Paths To Special".format(COLOR2), "", "Please Wait[/COLOR]")
 	for root, dirs, files in os.walk(url):
 		for file in files:
 			start += 1
 			perc = int(percentage(start, total))
-			if file.endswith(".xml") or file.endswith(".hash") or file.endswith("properies"):
-				DP.update(perc, "[COLOR %s]Scanning: [COLOR %s]%s[/COLOR]" % (COLOR2, COLOR1, root.replace(HOME, '')), "[COLOR %s]%s[/COLOR]" % (COLOR1, file), "Please Wait[/COLOR]")
+			if file.endswith(".xml") or file.endswith(".hash") or file.endswith(".properties"):
+				DP.update(perc, "[COLOR {0}]Scanning: [COLOR {1}]{2}[/COLOR]".format(COLOR2, COLOR1, root.replace(HOME, '')),
+						  "[COLOR {0}]{1}[/COLOR]".format(COLOR1, file), "Please Wait[/COLOR]")
 				a = open(os.path.join(root, file)).read()
-				encodedpath  = urllib.quote(HOME)
-				encodedpath2  = urllib.quote(HOME).replace('%3A','%3a').replace('%5C','%5c')
+				encodedpath = urllib.parse.quote(HOME)
+				encodedpath2 = urllib.parse.quote(HOME).replace('%3A', '%3a').replace('%5C', '%5c')
 				b = a.replace(HOME, 'special://home/').replace(encodedpath, 'special://home/').replace(encodedpath2, 'special://home/')
 				f = open((os.path.join(root, file)), mode='w')
 				f.write(str(b))
 				f.close()
 				if DP.iscanceled():
 					DP.close()
-					LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Convert Path Cancelled[/COLOR]" % COLOR2)
+					LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]Convert Path Cancelled[/COLOR]".format(COLOR2))
 					sys.exit()
 	DP.close()
 	log("[Convert Paths to Special] Complete", xbmc.LOGNOTICE)
-	if not over: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Convert Paths to Special: Complete![/COLOR]" % COLOR2)
+	if not over:
+		LogNotify("[COLOR {0}]{1}[/COLOR]".format(COLOR1, ADDONTITLE), "[COLOR {0}]Convert Paths to Special: Complete![/COLOR]".format(COLOR2))
+
 
 def clearCrash():
 	files = []
 	for file in glob.glob(os.path.join(LOG, '*crashlog*.*')):
 		files.append(file)
 	if len(files) > 0:
-		if DIALOG.yesno(ADDONTITLE, '[COLOR %s]Would you like to delete the Crash logs?' % COLOR2, '[COLOR %s]%s[/COLOR] Files Found[/COLOR]' % (COLOR1, len(files)), yeslabel="[B][COLOR springgreen]Remove Logs[/COLOR][/B]", nolabel="[B][COLOR red]Keep Logs[/COLOR][/B]"):
+		if DIALOG.yesno(ADDONTITLE, '[COLOR {0}]Would you like to delete the Crash logs?'.format(COLOR2),
+						'[COLOR {0}]{1}[/COLOR] Files Found[/COLOR]'.format(COLOR1, len(files)),
+						yeslabel="[B][COLOR springgreen]Remove Logs[/COLOR][/B]",
+						nolabel="[B][COLOR red]Keep Logs[/COLOR][/B]"):
 			for f in files:
 				os.remove(f)
-			LogNotify('[COLOR %s]Clear Crash Logs[/COLOR]' % COLOR1, '[COLOR %s]%s Crash Logs Removed[/COLOR]' % (COLOR2, len(files)))
-		else: LogNotify('[COLOR %s]%s[/COLOR]' % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Crash Logs Cancelled[/COLOR]' % COLOR2)
-	else: LogNotify('[COLOR %s]Clear Crash Logs[/COLOR]' % COLOR1, '[COLOR %s]No Crash Logs Found[/COLOR]' % COLOR2)
+			LogNotify('[COLOR {0}]Clear Crash Logs[/COLOR]'.format(COLOR1), '[COLOR {0}]{1} Crash Logs Removed[/COLOR]'.format(COLOR2, len(files)))
+		else:
+			LogNotify('[COLOR {0}]{1}[/COLOR]'.format(COLOR1, ADDONTITLE), '[COLOR {0}]Clear Crash Logs Cancelled[/COLOR]'.format(COLOR2))
+	else:
+		LogNotify('[COLOR {0}]Clear Crash Logs[/COLOR]'.format(COLOR1), '[COLOR {0}]No Crash Logs Found[/COLOR]'.format(COLOR2))
+
 
 def hidePassword():
-	if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to [COLOR %s]hide[/COLOR] all passwords when typing in the add-on settings menus?[/COLOR]" % COLOR2, yeslabel="[B][COLOR springgreen]Hide Passwords[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
+	if DIALOG.yesno(ADDONTITLE, "[COLOR {0}]Would you like to [COLOR {1}]hide[/COLOR] all passwords when typing in the add-on settings menus?[/COLOR]".format(COLOR1, COLOR2),
+					yeslabel="[B][COLOR springgreen]Hide Passwords[/COLOR][/B]",
+					nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
 		count = 0
 		for folder in glob.glob(os.path.join(ADDONS, '*/')):
 			sett = os.path.join(folder, 'resources', 'settings.xml')
@@ -1134,18 +1149,22 @@ def hidePassword():
 				match = parseDOM(f, 'addon', ret='id')
 				for line in match:
 					if 'pass' in line:
-						if not 'option="hidden"' in line:
+						if 'option="hidden"' not in line:
 							try:
 								change = line.replace('/', 'option="hidden" /')
 								f.replace(line, change)
 								count += 1
-								log("[Hide Passwords] found in %s on %s" % (sett.replace(HOME, ''), line), xbmc.LOGDEBUG)
+								log("[Hide Passwords] found in {0} on {1}".format(sett.replace(HOME, ''), line), xbmc.LOGDEBUG)
 							except:
 								pass
-				f2 = open(sett, mode='w'); f2.write(f); f2.close()
-		LogNotify("[COLOR %s]Hide Passwords[/COLOR]" % COLOR1, "[COLOR %s]%s items changed[/COLOR]" % (COLOR2, count))
-		log("[Hide Passwords] %s items changed" % count, xbmc.LOGNOTICE)
-	else: log("[Hide Passwords] Cancelled", xbmc.LOGNOTICE)
+				f2 = open(sett, mode='w')
+				f2.write(f)
+				f2.close()
+		LogNotify("[COLOR {0}]Hide Passwords[/COLOR]".format(COLOR1), "[COLOR {0}]{1} items changed[/COLOR]".format(COLOR2, count))
+		log("[Hide Passwords] {0} items changed".format(count), xbmc.LOGNOTICE)
+	else:
+		log("[Hide Passwords] Cancelled", xbmc.LOGNOTICE)
+
 
 def unhidePassword():
 	if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to [COLOR %s]unhide[/COLOR] all passwords when typing in the add-on settings menus?[/COLOR]" % (COLOR2, COLOR1), yeslabel="[B][COLOR springgreen]Unhide Passwords[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"):
