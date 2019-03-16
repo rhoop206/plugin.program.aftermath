@@ -17,63 +17,16 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, os, sys, xbmcvfs, glob
-import shutil
-import urllib2,urllib
-import re
-import uservar
-import time
-from resources.libs import wizard as wiz
-from datetime import date, datetime, timedelta
+import xbmc
+import xbmcgui
 
-ADDON_ID       = uservar.ADDON_ID
-ADDON          = wiz.addonId(ADDON_ID)
-VERSION        = wiz.addonInfo(ADDON_ID,'version')
-ADDONPATH      = wiz.addonInfo(ADDON_ID,'path')
-ADDONTITLE     = uservar.ADDONTITLE
-DIALOG         = xbmcgui.Dialog()
-DP             = xbmcgui.DialogProgress()
-HOME           = xbmc.translatePath('special://home/')
-ADDONS         = os.path.join(HOME,     'addons')
-USERDATA       = os.path.join(HOME,     'userdata')
-PLUGIN         = os.path.join(ADDONS,   ADDON_ID)
-PACKAGES       = os.path.join(ADDONS,   'packages')
-ADDONDATA      = os.path.join(USERDATA, 'addon_data', ADDON_ID)
-FANART         = os.path.join(ADDONPATH,   'fanart.jpg')
-ICON           = os.path.join(ADDONPATH,   'icon.png')
-ART            = os.path.join(ADDONPATH,   'resources', 'art')
-SKINFOLD       = os.path.join(ADDONPATH,   'resources', 'skins', 'DefaultSkin', 'media')
-ADVANCED       = os.path.join(USERDATA,  'advancedsettings.xml')
-NOTIFY         = wiz.getS('notify')
-NOTEID         = wiz.getS('noteid')
-NOTEDISMISS    = wiz.getS('notedismiss')
-BUILDNAME      = wiz.getS('buildname')
-BUILDVERSION   = wiz.getS('buildversion')
-LATESTVERSION  = wiz.checkBuild(BUILDNAME, 'version')
-TODAY          = date.today()
-KODIV          = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
-TOMORROW       = TODAY + timedelta(days=1)
-THREEDAYS      = TODAY + timedelta(days=3)
-UPDATECHECK    = uservar.UPDATECHECK if str(uservar.UPDATECHECK).isdigit() else 1
-NEXTCHECK      = TODAY + timedelta(days=UPDATECHECK)
-NOTIFICATION   = uservar.NOTIFICATION
-ENABLE         = uservar.ENABLE
-HEADERTYPE     = uservar.HEADERTYPE if uservar.HEADERTYPE == 'Image' else 'Text'
-HEADERMESSAGE  = uservar.HEADERMESSAGE
-BACKGROUND     = uservar.BACKGROUND
-HEADERIMAGE    = uservar.HEADERIMAGE
-THEME1         = uservar.THEME1
-THEME2         = uservar.THEME2
-THEME3         = uservar.THEME3
-THEME4         = uservar.THEME4
-THEME5         = uservar.THEME5
-COLOR1         = uservar.COLOR1
-COLOR2         = uservar.COLOR2
-CONTACTICON    = uservar.CONTACTICON if not uservar.CONTACTICON == 'http://' else ICON
-CONTACTFANART  = uservar.CONTACTFANART if not uservar.CONTACTFANART == 'http://' else FANART
+import os
+import urllib
 
-if BACKGROUND == '': BACKGROUND = FANART
-elif not wiz.workingURL(BACKGROUND): BACKGROUND = FANART
+from resources.libs import tools
+from resources.libs import vars
+
+# LATESTVERSION  = wiz.checkBuild(BUILDNAME, 'version')
 
 ACTION_PREVIOUS_MENU 			=  10	## ESC action
 ACTION_NAV_BACK 				=  92	## Backspace action

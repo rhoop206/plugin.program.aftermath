@@ -47,10 +47,7 @@ except ImportError:
     zlib = None
     crc32 = binascii.crc32
 import xbmc
-KODIV          = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
-if KODIV > 17:
-	import xbmcaddon, xbmcgui, xbmcplugin #FTG mod for Kodi 18
-else:pass
+
 __all__ = ["BadZipfile", "error", "ZIP_STORED", "ZIP_DEFLATED", "is_zipfile",
            "ZipInfo", "ZipFile", "PyZipFile", "LargeZipFile" ]
 class BadZipfile(Exception):

@@ -17,12 +17,20 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcgui, urllib, sys, time, uservar
-import wizard as wiz
+import xbmc
+import xbmcgui
 
-ADDONTITLE     = uservar.ADDONTITLE
-COLOR1         = uservar.COLOR1
-COLOR2         = uservar.COLOR2
+try:
+    import urllib.request as urllib
+except:
+    import urllib
+
+import urllib
+import sys
+import time
+
+from resources.libs import tools
+from resources.libs import vars
 
 urllib.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36 SE 2.X MetaSr 1.0'
 

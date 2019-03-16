@@ -17,17 +17,21 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, xbmcgui, os
+import xbmc
+import xbmcgui
+
+import os
 import re
-import uservar
+
 import time
-from sqlite3 import dbapi2 as database
 from datetime import date, timedelta
-from resources.libs import wizard as wiz
+
+import uservar
+from resources.libs import wizard
 
 ADDON_ID       = uservar.ADDON_ID
 ADDONTITLE     = uservar.ADDONTITLE
-ADDON          = wiz.addonId(ADDON_ID)
+ADDON          = wizard.addonId(ADDON_ID)
 DIALOG         = xbmcgui.Dialog()
 HOME           = xbmc.translatePath('special://home/')
 ADDONS         = os.path.join(HOME,      'addons')

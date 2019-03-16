@@ -40,10 +40,11 @@ try:
 except ImportError:
 	import HTMLParser
 
-import downloader
-import extract
 import uservar
-import skinSwitch
+from resources.libs import downloader
+from resources.libs import extract
+from resources.libs import notify
+from resources.libs import tools
 
 ADDON_ID       = uservar.ADDON_ID
 ADDONTITLE     = uservar.ADDONTITLE

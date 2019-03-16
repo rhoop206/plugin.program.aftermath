@@ -24,22 +24,25 @@
 #   Added Email Logfile Url Support                                            #
 ################################################################################
 
-import os
-import re
-import socket
-from urllib import urlencode
-from urllib import FancyURLopener
 import xbmc
 import xbmcgui
 import xbmcvfs
+
+import os
+import re
+import socket
+
+from urllib import urlencode
+from urllib import FancyURLopener
+
 import uservar
-from resources.libs import wizard as wiz
+from resources.libs import wizard
 
 ADDON_ID         = uservar.ADDON_ID
 ADDONTITLE       = uservar.ADDONTITLE
 COLOR1           = uservar.COLOR1
 COLOR2           = uservar.COLOR2
-ADDON            = wiz.addonId(ADDON_ID)
+ADDON            = wizard.addonId(ADDON_ID)
 ADDONVERSION     = ADDON.getAddonInfo('version')
 DIALOG           = xbmcgui.Dialog()
 URL              = 'https://paste.ubuntu.com/'

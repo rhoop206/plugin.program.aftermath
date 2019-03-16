@@ -17,27 +17,14 @@
 #  http://www.gnu.org/copyleft/gpl.html                                        #
 ################################################################################
 
-import xbmc, uservar, sys, os
-import wizard as wiz
+import xbmc
 
-ADDON_ID       = uservar.ADDON_ID
-ADDONTITLE     = uservar.ADDONTITLE
-COLOR1         = uservar.COLOR1
-COLOR2         = uservar.COLOR2
-ADDON          = wiz.addonId(ADDON_ID)
-HOME           = xbmc.translatePath('special://home/')
-USERDATA       = os.path.join(HOME,      'userdata')
-GUISETTINGS    = os.path.join(USERDATA,  'guisettings.xml')
-KEEPFAVS       = wiz.getS('keepfavourites')
-KEEPSOURCES    = wiz.getS('keepsources')
-KEEPPROFILES   = wiz.getS('keepprofiles')
-KEEPADVANCED   = wiz.getS('keepadvanced')
-KEEPSUPER      = wiz.getS('keepsuper')
-KEEPREPOS      = wiz.getS('keeprepos')
-KEEPWHITELIST  = wiz.getS('keepwhitelist')
+import sys
 
-KODIV            = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
-if KODIV > 17:
+from resources.libs import vars
+from resources.libs import tools
+
+if vars.KODIV > 17:
 	from resources.libs import zfile as zipfile
 else:
 	import zipfile
