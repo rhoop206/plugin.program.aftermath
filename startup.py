@@ -370,7 +370,7 @@ if INSTALLED == 'true':
         wiz.clearS('build')
         FAILED = True
         if yes:
-            wiz.ebi("PlayMedia(plugin://%s/?mode=install&name=%s&url=fresh)" % (ADDON_ID, urllib.quote_plus(BUILDNAME)))
+            wiz.ebi("PlayMedia(plugin://%s/?mode=install&name=%s&url=fresh)" % (ADDON_ID, urllib.parse.quote_plus(BUILDNAME)))
             wiz.log("[Installed Check] Fresh Install Re-activated", xbmc.LOGNOTICE)
         else: wiz.log("[Installed Check] Reinstall Ignored")
     elif SKIN in ['skin.confluence', 'skin.estuary']:
@@ -388,7 +388,7 @@ if INSTALLED == 'true':
                 DIALOG.ok(ADDONTITLE, "[COLOR %s]It looks like the skin settings was not applied to the build." % COLOR2, "Sadly no gui fix was attatched to the build", "You will need to reinstall the build and make sure to do a force close[/COLOR]")
             elif wiz.workingURL(gui):
                 yes=DIALOG.yesno(ADDONTITLE, '%s was not installed correctly!' % BUILDNAME, 'It looks like the skin settings was not applied to the build.', 'Would you like to apply the GuiFix?', nolabel='[B]No, Cancel[/B]', yeslabel='[B]Apply Fix[/B]')
-                if yes: wiz.ebi("PlayMedia(plugin://%s/?mode=install&name=%s&url=gui)" % (ADDON_ID, urllib.quote_plus(BUILDNAME))); wiz.log("[Installed Check] Guifix attempting to install")
+                if yes: wiz.ebi("PlayMedia(plugin://%s/?mode=install&name=%s&url=gui)" % (ADDON_ID, urllib.parse.quote_plus(BUILDNAME))); wiz.log("[Installed Check] Guifix attempting to install")
                 else: wiz.log('[Installed Check] Guifix url working but cancelled: %s' % gui, xbmc.LOGNOTICE)
             else:
                 DIALOG.ok(ADDONTITLE, "[COLOR %s]It looks like the skin settings was not applied to the build." % COLOR2, "Sadly no gui fix was attatched to the build", "You will need to reinstall the build and make sure to do a force close[/COLOR]")

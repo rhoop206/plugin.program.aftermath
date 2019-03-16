@@ -391,8 +391,8 @@ def viewBuild(name):
 def viewThirdList(number):
     name = eval('THIRD%sNAME' % number)
     url  = eval('THIRD%sURL' % number)
-    work = wiz.workingURL(url)
-    if not work == True:
+    WORKINGURL = wiz.workingURL(url)
+    if not WORKINGURL:
         addFile('Url for txt file not valid', '', icon=ICONBUILDS, themeit=THEME3)
         addFile('%s' % WORKINGURL, '', icon=ICONBUILDS, themeit=THEME3)
     else:
@@ -441,7 +441,7 @@ def apkScraper(name=""):
                     name2 = tempname[2]
                     v2 = ''
                 title = "[COLOR %s]%s v%s%s %s[/COLOR] [COLOR %s]%s[/COLOR] [COLOR %s]%s[/COLOR]" % (COLOR1, tempname[0].title(), tempname[1], v2.upper(), name2, COLOR2, size.replace(' ', ''), COLOR1, date)
-                download = urljoin(kodiurl1, url)
+                download = urlparse.urljoin(kodiurl1, url)
                 addFile(title, 'apkinstall', "%s v%s%s %s" % (tempname[0].title(), tempname[1], v2.upper(), name2), download)
                 x += 1
             except:
@@ -454,7 +454,7 @@ def apkScraper(name=""):
             try:
                 tempname = name.split('-')
                 title = "[COLOR %s]%s v%s %s[/COLOR] [COLOR %s]%s[/COLOR] [COLOR %s]%s[/COLOR]" % (COLOR1, tempname[0].title(), tempname[1], tempname[2], COLOR2, size.replace(' ', ''), COLOR1, date)
-                download = urljoin(kodiurl2, url)
+                download = urlparse.urljoin(kodiurl2, url)
                 addFile(title, 'apkinstall', "%s v%s %s" % (tempname[0].title(), tempname[1], tempname[2]), download)
                 x += 1
             except:
@@ -793,7 +793,7 @@ def maintMenu(view=None):
     thirdparty  = 'true' if THIRDPARTY     == 'true' else 'false'
     errors = int(errorChecking(count=True))
     errorsfound = str(errors) + ' Error(s) Found' if errors > 0 else 'None Found'
-    wizlogsize = ': [COLOR red]Not Found[/COLOR]' if not os.path.exists(WIZLOG) else ": [COLOR springgreen]%s[/COLOR]" % wiz.convertSize(os.path.getsize(WIZLOG))
+    wizlogsize = ': [COLOR red]Not Found[/COLOR]' if not os.path.exists(WIZLOG) else ": [COLOR springgreen]%s[/COLOR]" % tools.convert_size(os.path.getsize(WIZLOG))
     if includeall == 'true':
         includeplacenta = 'true'
         includegaia = 'true'
@@ -960,7 +960,7 @@ def runSpeedTest():
         if not os.path.exists(SPEEDTESTFOLD): os.makedirs(SPEEDTESTFOLD)
         urlsplits = found[0].split('/')
         dest = os.path.join(SPEEDTESTFOLD, urlsplits[-1])
-        urllib.urlretrieve(found[0], dest)
+        urllib.request.urlretrieve(found[0], dest)
         viewSpeedTest(urlsplits[-1])
     except:
         wiz.log("[Speed Test] Error Running Speed Test")
@@ -1017,7 +1017,7 @@ def viewAdvanced():
 def removeAdvanced():
     if os.path.exists(ADVANCED):
         wiz.removeFile(ADVANCED)
-    else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]AdvancedSettings.xml not found[/COLOR]")
+    else: wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]AdvancedSettings.xml not found[/COLOR]")
 
 def showAutoAdvanced():
     notify.autoConfig()
@@ -1285,7 +1285,7 @@ def fixUpdate():
         dbfile = os.path.join(DATABASE, wiz.latestDB('Addons'))
         try:
             os.remove(dbfile)
-        except Exception, e:
+        except Exception as e:
             wiz.log("Unable to remove %s, Purging DB" % dbfile)
             wiz.purgeDb(dbfile)
     else:
@@ -1297,7 +1297,7 @@ def fixUpdate():
         dbfile = os.path.join(DATABASE, wiz.latestDB('Addons'))
         try:
             os.remove(dbfile)
-        except Exception, e:
+        except Exception as e:
             wiz.log("Unable to remove %s, Purging DB" % dbfile)
             wiz.purgeDb(dbfile)
         wiz.killxbmc(True)
@@ -1624,7 +1624,7 @@ def buildWizard(name, type, theme=None, over=False):
 
 def thirdPartyInstall(name, url):
     if not wiz.workingURL(url):
-        LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Invalid URL for Build[/COLOR]' % COLOR2); return
+        wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Invalid URL for Build[/COLOR]' % COLOR2); return
     type = DIALOG.yesno(ADDONTITLE, "[COLOR %s]Would you like to preform a [COLOR %s]Fresh Install[/COLOR] or [COLOR %s]Normal Install[/COLOR] for:[/COLOR]" % (COLOR2, COLOR1, COLOR1), "[COLOR %s]%s[/COLOR]" % (COLOR1, name), yeslabel="[B][COLOR springgreen]Fresh Install[/COLOR][/B]", nolabel="[B][COLOR red]Normal Install[/COLOR][/B]")
     if type == 1:
         freshStart('third', True)
@@ -1741,9 +1741,9 @@ def romInstaller(name, url):
 def createMenu(type, add, name):
     if   type == 'saveaddon':
         menu_items=[]
-        add2  = urllib.quote_plus(add.lower().replace(' ', ''))
+        add2  = urlparse.quote_plus(add.lower().replace(' ', ''))
         add3  = add.replace('Debrid', 'Real Debrid')
-        name2 = urllib.quote_plus(name.lower().replace(' ', ''))
+        name2 = urlparse.quote_plus(name.lower().replace(' ', ''))
         name = name.replace('url', 'URL Resolver')
         menu_items.append((THEME2 % name.title(),             ' '))
         menu_items.append((THEME3 % 'Save %s Data' % add3,               'RunPlugin(plugin://%s/?mode=save%s&name=%s)' %    (ADDON_ID, add2, name2)))
@@ -1751,9 +1751,9 @@ def createMenu(type, add, name):
         menu_items.append((THEME3 % 'Clear %s Data' % add3,              'RunPlugin(plugin://%s/?mode=clear%s&name=%s)' %   (ADDON_ID, add2, name2)))
     elif type == 'save'    :
         menu_items=[]
-        add2  = urllib.quote_plus(add.lower().replace(' ', ''))
+        add2  = urlparse.quote_plus(add.lower().replace(' ', ''))
         add3  = add.replace('Debrid', 'Real Debrid')
-        name2 = urllib.quote_plus(name.lower().replace(' ', ''))
+        name2 = urlparse.quote_plus(name.lower().replace(' ', ''))
         name = name.replace('url', 'URL Resolver')
         menu_items.append((THEME2 % name.title(),             ' '))
         menu_items.append((THEME3 % 'Register %s' % add3,                'RunPlugin(plugin://%s/?mode=auth%s&name=%s)' %    (ADDON_ID, add2, name2)))
@@ -1763,7 +1763,7 @@ def createMenu(type, add, name):
         menu_items.append((THEME3 % 'Clear Addon %s Data' % add3,        'RunPlugin(plugin://%s/?mode=addon%s&name=%s)' %   (ADDON_ID, add2, name2)))
     elif type == 'install'  :
         menu_items=[]
-        name2 = urllib.quote_plus(name)
+        name2 = urlparse.quote_plus(name)
         menu_items.append((THEME2 % name,                                'RunAddon(%s, ?mode=viewbuild&name=%s)'  % (ADDON_ID, name2)))
         menu_items.append((THEME3 % 'Fresh Install',                     'RunPlugin(plugin://%s/?mode=install&name=%s&url=fresh)'  % (ADDON_ID, name2)))
         menu_items.append((THEME3 % 'Normal Install',                    'RunPlugin(plugin://%s/?mode=install&name=%s&url=normal)' % (ADDON_ID, name2)))
@@ -1971,7 +1971,8 @@ def removeAddon(addon, name, over=False):
         wiz.cleanHouse(folder)
         xbmc.sleep(200)
         try: shutil.rmtree(folder)
-        except Exception ,e: wiz.log("Error removing %s" % addon, xbmc.LOGNOTICE)
+        except:
+            wiz.log("Error removing %s" % addon, xbmc.LOGNOTICE)
         removeAddonData(addon, name, over)
     if over == False:
         wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]%s Removed[/COLOR]" % (COLOR2, name))
@@ -2026,7 +2027,8 @@ def restoreextit(type):
     wiz.restoreExternal(type)
 
 def buildInfo(name):
-    if wiz.workingURL(BUILDFILE) == True:
+    WORKINGURL = wiz.workingURL(BUILDFILE)
+    if WORKINGURL:
         if wiz.checkBuild(name, 'url'):
             name, version, url, minor, gui, kodi, theme, icon, fanart, preview, adult, info, description = wiz.checkBuild(name, 'all')
             adult = 'Yes' if adult.lower() == 'yes' else 'No'
@@ -2071,7 +2073,8 @@ def buildInfo(name):
     else: wiz.log("Build text file not working: %s" % WORKINGURL)
 
 def buildVideo(name):
-    if wiz.workingURL(BUILDFILE) == True:
+    WORKINGURL = wiz.workingURL(BUILDFILE)
+    if WORKINGURL:
         videofile = wiz.checkBuild(name, 'preview')
         if videofile and not videofile == 'http://': playVideo(videofile)
         else: wiz.log("[%s]Unable to find url for video preview" % name)
@@ -2302,7 +2305,7 @@ def freshStart(install=None, over=False):
                     try:
                         if name == latestAddonDB and KODIV >= 17: wiz.log("Ignoring %s on v%s" % (name, KODIV), xbmc.LOGNOTICE)
                         else: os.remove(os.path.join(root,name))
-                    except Exception, e:
+                    except Exception as e:
                         if not name.startswith('Textures13'):
                             wiz.log('Failed to delete, Purging DB', xbmc.LOGNOTICE)
                             wiz.log("-> %s" % (str(e)), xbmc.LOGNOTICE)
@@ -2310,7 +2313,7 @@ def freshStart(install=None, over=False):
                 else:
                     DP.update(int(wiz.percentage(del_file, total_files)), '', '[COLOR %s]File: [/COLOR][COLOR %s]%s[/COLOR]' % (COLOR2, COLOR1, name), '')
                     try: os.remove(os.path.join(root,name))
-                    except Exception, e:
+                    except Exception as e:
                         wiz.log("Error removing %s" % os.path.join(root, name), xbmc.LOGNOTICE)
                         wiz.log("-> / %s" % (str(e)), xbmc.LOGNOTICE)
             if DP.iscanceled():
@@ -2415,7 +2418,7 @@ def testnotify():
             id, msg = wiz.splitNotify(NOTIFICATION)
             if id == False: wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Notification: Not Formated Correctly[/COLOR]" % COLOR2); return
             notify.notification(msg, True)
-        except Exception, e:
+        except Exception as e:
             wiz.log("Error on Notifications Window: %s" % str(e), xbmc.LOGERROR)
     else: wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Invalid URL for Notification[/COLOR]" % COLOR2)
 
@@ -2437,9 +2440,9 @@ def testfirstRun():
 
 def addDir(display, mode=None, name=None, url=None, menu=None, description=ADDONTITLE, overwrite=True, fanart=FANART, icon=ICON, themeit=None):
     u = sys.argv[0]
-    if not mode == None: u += "?mode=%s" % urllib.quote_plus(mode)
-    if not name == None: u += "&name="+urllib.quote_plus(name)
-    if not url == None: u += "&url="+urllib.quote_plus(url)
+    if not mode == None: u += "?mode=%s" % urlparse.quote_plus(mode)
+    if not name == None: u += "&name="+urlparse.quote_plus(name)
+    if not url == None: u += "&url="+urlparse.quote_plus(url)
     ok=True
     if themeit: display = themeit % display
     liz=xbmcgui.ListItem(display, iconImage="DefaultFolder.png", thumbnailImage=icon)
@@ -2451,9 +2454,9 @@ def addDir(display, mode=None, name=None, url=None, menu=None, description=ADDON
 
 def addFile(display, mode=None, name=None, url=None, menu=None, description=ADDONTITLE, overwrite=True, fanart=FANART, icon=ICON, themeit=None):
     u = sys.argv[0]
-    if not mode == None: u += "?mode=%s" % urllib.quote_plus(mode)
-    if not name == None: u += "&name="+urllib.quote_plus(name)
-    if not url == None: u += "&url="+urllib.quote_plus(url)
+    if not mode == None: u += "?mode=%s" % urlparse.quote_plus(mode)
+    if not name == None: u += "&name="+urlparse.quote_plus(name)
+    if not url == None: u += "&url="+urlparse.quote_plus(url)
     ok=True
     if themeit: display = themeit % display
     liz=xbmcgui.ListItem(display, iconImage="DefaultFolder.png", thumbnailImage=icon)
@@ -2495,11 +2498,11 @@ url=None
 name=None
 mode=None
 
-try:     mode=urllib.unquote_plus(params["mode"])
+try:     mode=urlparse.unquote_plus(params["mode"])
 except:  pass
-try:     name=urllib.unquote_plus(params["name"])
+try:     name=urlparse.unquote_plus(params["name"])
 except:  pass
-try:     url=urllib.unquote_plus(params["url"])
+try:     url=urlparse.unquote_plus(params["url"])
 except:  pass
 
 wiz.log('[ Version : \'%s\' ] [ Mode : \'%s\' ] [ Name : \'%s\' ] [ Url : \'%s\' ]' % (VERSION, mode if not mode == '' else None, name, url))
@@ -2531,7 +2534,6 @@ elif mode=='advancedsetting': advancedWindow(name)
 elif mode=='autoadvanced'   : showAutoAdvanced(); wiz.refresh()
 elif mode=='removeadvanced' : removeAdvanced(); wiz.refresh()
 elif mode=='asciicheck'     : wiz.asciiCheck()
-elif mode=='extractazip'    : wiz.extractAZip()
 elif mode=='backupbuild'    : wiz.backUpOptions('build')
 elif mode=='backupgui'      : wiz.backUpOptions('guifix')
 elif mode=='backuptheme'    : wiz.backUpOptions('theme')
@@ -2637,7 +2639,7 @@ elif mode=='updatelogin'    : loginit.autoUpdate('all')
 elif mode=='importlogin'    : loginit.importlist(name); wiz.refresh()
 
 elif mode=='contact'        : notify.contact(CONTACT)
-elif mode=='settings'       : wiz.openS(name); wiz.refresh()
+elif mode=='settings'       : wiz.openS(); wiz.refresh()
 elif mode=='forcetext'      : wiz.forceText()
 elif mode=='opensettings'   : id = eval(url.upper()+'ID')[name]['plugin']; addonid = wiz.addonId(id); addonid.openSettings(); wiz.refresh()
 

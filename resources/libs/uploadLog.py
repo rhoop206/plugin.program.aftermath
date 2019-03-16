@@ -90,15 +90,15 @@ class Main:
         for item in files:
             filetype = item[0]
             if filetype == 'log':
-                log = wiz.Grab_Log(file=True).replace(LOG, "")
+                log = wizard.Grab_Log(file=True).replace(LOG, "")
                 name = log if log != False else "kodi.log"
                 error = "Error posting the %s file" % name
             elif filetype == 'oldlog':
-                log = wiz.Grab_Log(file=True, old=True).replace(LOG, "")
+                log = wizard.Grab_Log(file=True, old=True).replace(LOG, "")
                 name = log if log != False else "kodi.old.log"
                 error = "Error posting the %s file" % name
-            elif filetype == 'wizlog':
-                name = "wizard.log"
+            elif filetype == 'wizardlog':
+                name = "wizardard.log"
                 error = "Error posting the %s file" % name
             elif filetype == 'crashlog':
                 name = "crash log"
@@ -123,15 +123,15 @@ class Main:
 
     def getSettings(self):
         self.oldlog   = ADDON.getSetting('oldlog') == 'true'
-        self.wizlog   = ADDON.getSetting('wizlog') == 'true'
+        self.wizardlog   = ADDON.getSetting('wizardlog') == 'true'
         self.crashlog = ADDON.getSetting('crashlog') == 'true'
         self.email    = ADDON.getSetting('email')
 
     def getFiles(self):
         logfiles = []
-        log    = wiz.Grab_Log(file=True)
-        old    = wiz.Grab_Log(file=True, old=True)
-        wizard = False if not os.path.exists(WIZLOG) else WIZLOG
+        log    = wizard.Grab_Log(file=True)
+        old    = wizard.Grab_Log(file=True, old=True)
+        wizardard = False if not os.path.exists(wizardLOG) else wizardLOG
         if log:
             if os.path.exists(log): logfiles.append(['log', log])
             else: self.showResult("No log file found")
@@ -141,10 +141,10 @@ class Main:
                 if os.path.exists(old): logfiles.append(['oldlog', old])
                 else: self.showResult("No old log file found")
             else: self.showResult("No old log file found")
-        if self.wizlog:
-            if wizard:
-                logfiles.append(['wizlog', wizard])
-            else: self.showResult("No wizard log file found")
+        if self.wizardlog:
+            if wizardard:
+                logfiles.append(['wizardlog', wizardard])
+            else: self.showResult("No wizardard log file found")
         if self.crashlog:
             crashlog_path = ''
             items = []
@@ -154,14 +154,14 @@ class Main:
             elif xbmc.getCondVisibility('system.platform.ios'):
                 crashlog_path = '/var/mobile/Library/Logs/CrashReporter/'
                 filematch = 'Kodi'
-            elif wiz.platform() == 'linux':
+            elif wizard.platform() == 'linux':
                 crashlog_path = os.path.expanduser('~') # not 100% accurate (crashlogs can be created in the dir kodi was started from as well)
                 filematch = 'kodi_crashlog'
-            elif wiz.platform() == 'windows':
-                wiz.log("Windows crashlogs are not supported, please disable this option in the addon settings", xbmc.LOGNOTICE)
+            elif wizard.platform() == 'windows':
+                wizard.log("Windows crashlogs are not supported, please disable this option in the addon settings", xbmc.LOGNOTICE)
                 #self.showResult("Windows crashlogs are not supported, please disable this option in the addon settings")
-            elif wiz.platform() == 'android':
-                wiz.log("Android crashlogs are not supported, please disable this option in the addon settings", xbmc.LOGNOTICE)
+            elif wizard.platform() == 'android':
+                wizard.log("Android crashlogs are not supported, please disable this option in the addon settings", xbmc.LOGNOTICE)
                 #self.showResult("Android crashlogs are not supported, please disable this option in the addon settings")
             if crashlog_path and os.path.isdir(crashlog_path):
                 dirs, files = xbmcvfs.listdir(crashlog_path)
@@ -172,7 +172,7 @@ class Main:
                         lastcrash = items[-1]
                         logfiles.append(['crashlog', lastcrash])
             if len(items) == 0:
-                wiz.log("No crashlog file found", xbmc.LOGNOTICE)
+                wizard.log("No crashlog file found", xbmc.LOGNOTICE)
         return logfiles
 
     def readLog(self, path):
@@ -183,10 +183,10 @@ class Main:
             if content:
                 return True, content
             else:
-                wiz.log('file is empty', xbmc.LOGNOTICE)
+                wizard.log('file is empty', xbmc.LOGNOTICE)
                 return False, "File is Empty"
         except:
-            wiz.log('unable to read file', xbmc.LOGNOTICE)
+            wizard.log('unable to read file', xbmc.LOGNOTICE)
             return False, "Unable to Read File"
 
     def cleanLog(self, content):
@@ -208,17 +208,17 @@ class Main:
             page = url_opener.open(URL, params)
         except Exception as e:
             a = 'failed to connect to the server'
-            wiz.log("%s: %s" % (a, str(e)), xbmc.LOGERROR)
+            wizard.log("%s: %s" % (a, str(e)), xbmc.LOGERROR)
             return False, a
 
         try:
             page_url = page.url.strip()
             # self.copy2clip(page_url)
-            wiz.log("URL for %s: %s" % (name, page_url), xbmc.LOGNOTICE)
+            wizard.log("URL for %s: %s" % (name, page_url), xbmc.LOGNOTICE)
             return True, page_url
         except Exception as e:
             a = 'unable to retrieve the paste url'
-            wiz.log("%s: %s" % (a, str(e)), xbmc.LOGERROR)
+            wizard.log("%s: %s" % (a, str(e)), xbmc.LOGERROR)
             return False, a
     
     # def copy2clip(txt):
@@ -245,17 +245,17 @@ class Main:
             
             
     # def email_Log(self, email, results, file):
-        # URL = 'http://aftermathwizard.net/mail_logs.php'
-        # data = {'email': email, 'results': results, 'file': file, 'wizard': ADDONTITLE}
+        # URL = 'http://aftermathwizardard.net/mail_logs.php'
+        # data = {'email': email, 'results': results, 'file': file, 'wizardard': ADDONTITLE}
         # params = urlencode(data)
         # url_opener = pasteURLopener()
         # try:
             # result     = url_opener.open(URL, params)
             # returninfo = result.read()
-            # wiz.log(str(returninfo), xbmc.LOGNOTICE)
+            # wizard.log(str(returninfo), xbmc.LOGNOTICE)
         # except Exception, e:
             # a = 'failed to connect to the server'
-            # wiz.log("%s: %s" % (a, str(e)), xbmc.LOGERROR)
+            # wizard.log("%s: %s" % (a, str(e)), xbmc.LOGERROR)
             # return False, a
         # try:
             # js_data = json.loads(returninfo)
@@ -263,14 +263,14 @@ class Main:
                 # return js_data['type'], str(js_data['text'])
             # else: return str(js_data)
         # except Exception, e:
-            # wiz.log("ERROR: "+ str(e), xbmc.LOGERROR)
+            # wizard.log("ERROR: "+ str(e), xbmc.LOGERROR)
         # return "Error Sending Email."
 
     def showResult(self, message, url=None):
         if url is not None:
             try:
                 fn        = url.split('/')[-2]
-                imagefile = wiz.generateQR(url, fn)
+                imagefile = wizard.generateQR(url, fn)
                 #imagefile = os.path.join(QRCODES,'%s.png' % fn)
                 #qrIMG     = pyqrcode.create(url)
                 #qrIMG.png(imagefile, scale=10)
@@ -282,7 +282,7 @@ class Main:
                 except:
                     pass
             except Exception as e:
-                wiz.log(str(e), xbmc.LOGNOTICE)
+                wizard.log(str(e), xbmc.LOGNOTICE)
                 confirm   = DIALOG.ok(ADDONTITLE, "[COLOR %s]%s[/COLOR]" % (COLOR2, message))
         else:
             confirm   = DIALOG.ok(ADDONTITLE, "[COLOR %s]%s[/COLOR]" % (COLOR2, message))

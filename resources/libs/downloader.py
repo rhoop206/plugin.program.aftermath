@@ -38,9 +38,9 @@ urllib.URLopener.version = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHT
 def download(url, dest, dp = None):
     if not dp:
         dp = xbmcgui.DialogProgress()
-        dp.create(ADDONTITLE ,"Downloading Content",' ', ' ')
+        dp.create(vars.ADDONTITLE, "Downloading Content", ' ', ' ')
     dp.update(0)
-    start_time=time.time()
+    start_time = time.time()
     urllib.urlretrieve(url, dest, lambda nb, bs, fs: _pbhook(nb, bs, fs, dp, start_time))
 
 
@@ -59,14 +59,13 @@ def _pbhook(numblocks, blocksize, filesize, dp, start_time):
             kbps_speed = kbps_speed / 1024
             type_speed = 'MB'
         total = float(filesize) / (1024 * 1024)
-        mbs = '[COLOR %s][B]Size:[/B] [COLOR %s]%.02f[/COLOR] MB of [COLOR %s]%.02f[/COLOR] MB[/COLOR]' % (COLOR2, COLOR1, currently_downloaded, COLOR1, total)
-        e = '[COLOR %s][B]Speed:[/B] [COLOR %s]%.02f [/COLOR]%s/s ' % (COLOR2, COLOR1, kbps_speed, type_speed)
-        e += '[B]ETA:[/B] [COLOR '+COLOR1+']%02d:%02d[/COLOR][/COLOR]' % divmod(eta, 60)
+        mbs = '[COLOR %s][B]Size:[/B] [COLOR %s]%.02f[/COLOR] MB of [COLOR %s]%.02f[/COLOR] MB[/COLOR]' % (vars.COLOR2, vars.COLOR1, currently_downloaded, vars.COLOR1, total)
+        e = '[COLOR %s][B]Speed:[/B] [COLOR %s]%.02f [/COLOR]%s/s ' % (vars.COLOR2, vars.COLOR1, kbps_speed, type_speed)
+        e += '[B]ETA:[/B] [COLOR '+vars.COLOR1+']%02d:%02d[/COLOR][/COLOR]' % divmod(eta, 60)
         dp.update(percent, '', mbs, e)
     except Exception as e:
-        wiz.log("ERROR Downloading: %s" % str(e), xbmc.LOGERROR)
-        return str(e)
+        tools.log("ERROR Downloading: {0}".format(str(e)), xbmc.LOGERROR)
     if dp.iscanceled():
         dp.close()
-        wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]Download Cancelled[/COLOR]" % COLOR2)
+        tools.log_notify("[COLOR {0}]{1}[/COLOR]".format(vars.COLOR1, vars.ADDONTITLE), "[COLOR {0}]Download Cancelled[/COLOR]".format(vars.COLOR2))
         sys.exit()

@@ -293,8 +293,7 @@ class ZipInfo (object):
             zip64 = file_size > ZIP64_LIMIT or compress_size > ZIP64_LIMIT
         if zip64:
             fmt = '<HHQQ'
-            extra = extra + struct.pack(fmt,
-                    1, struct.calcsize(fmt)-4, file_size, compress_size)
+            extra = extra + struct.pack(fmt, 1, struct.calcsize(fmt)-4, file_size, compress_size)
         if file_size > ZIP64_LIMIT or compress_size > ZIP64_LIMIT:
             if not zip64:
                 raise LargeZipFile("Filesize would require ZIP64 extensions")
@@ -373,7 +372,7 @@ class _ZipDecrypter:
         plain_text = map(zd, cypher_text)
     """
 
-    def _GenerateCRCTable(self):
+    def _GenerateCRCTable():
         """Generate a CRC-32 table.
         ZIP encryption uses the CRC32 one-byte primitive for scrambling some
         internal keys. We noticed that a direct implementation is faster than
@@ -390,6 +389,8 @@ class _ZipDecrypter:
                     crc = ((crc >> 1) & 0x7FFFFFFF)
             table[i] = crc
         return table
+
+
     crctable = _GenerateCRCTable()
 
     def _crc32(self, ch, crc):
@@ -592,14 +593,14 @@ class ZipExtFile(io.BufferedIOBase):
             super(ZipExtFile, self).close()
 
 def platform():
-	if xbmc.getCondVisibility('system.platform.android'):             return 'android'
-	elif xbmc.getCondVisibility('system.platform.linux'):             return 'linux'
-	elif xbmc.getCondVisibility('system.platform.linux.Raspberrypi'): return 'linux'
-	elif xbmc.getCondVisibility('system.platform.windows'):           return 'windows'
-	elif xbmc.getCondVisibility('system.platform.osx'):               return 'osx'
-	elif xbmc.getCondVisibility('system.platform.atv2'):              return 'atv2'
-	elif xbmc.getCondVisibility('system.platform.ios'):               return 'ios'
-	elif xbmc.getCondVisibility('system.platform.darwin'):            return 'ios'
+    if xbmc.getCondVisibility('system.platform.android'):             return 'android'
+    elif xbmc.getCondVisibility('system.platform.linux'):             return 'linux'
+    elif xbmc.getCondVisibility('system.platform.linux.Raspberrypi'): return 'linux'
+    elif xbmc.getCondVisibility('system.platform.windows'):           return 'windows'
+    elif xbmc.getCondVisibility('system.platform.osx'):               return 'osx'
+    elif xbmc.getCondVisibility('system.platform.atv2'):              return 'atv2'
+    elif xbmc.getCondVisibility('system.platform.ios'):               return 'ios'
+    elif xbmc.getCondVisibility('system.platform.darwin'):            return 'ios'
 
 class ZipFile(object):
     fp = None 
@@ -743,8 +744,8 @@ class ZipFile(object):
         """Print a table of contents for the zip file."""
         print("%-46s %19s %12s".format("File Name", "Modified    ", "Size"))
         for zinfo in self.filelist:
-            #date = "%d-%02d-%02d %02d:%02d:%02d" % zinfo.date_time[:6]
-            #print("%-46s %s %12d".format(zinfo.filename, date, zinfo.file_size))
+            date = "%d-%02d-%02d %02d:%02d:%02d" % zinfo.date_time[:6]
+            print("%-46s %s %12d".format(zinfo.filename, date, zinfo.file_size))
     def testzip(self):
         """Read all the files and check the CRC."""
         chunk_size = 2 ** 20
@@ -784,7 +785,7 @@ class ZipFile(object):
         return self.open(name, "r", pwd).read()
     def open(self, name, mode="r", pwd=None):
         """Return file-like object for 'name'."""
-		###FTG mod for Kodi 18
+        ###FTG mod for Kodi 18
         if mode not in ("r", "U", "rU"):
             raise RuntimeError('open() requires mode "r", "U", or "rU"')
         if not self.fp:
@@ -957,7 +958,7 @@ class ZipFile(object):
 
         with open(filename, "rb") as fp:
             # Must overwrite original zip for Kodi 18
-			#FTG mod for Kodi 18
+            #FTG mod for Kodi 18
             zinfo.CRC = CRC = 0
             zinfo.compress_size = compress_size = 0
             zip64 = self._allowZip64 and \
