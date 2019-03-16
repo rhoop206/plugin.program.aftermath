@@ -43,9 +43,9 @@ ACTION_MOUSE_LEFT_CLICK 		= 100
 ACTION_MOUSE_LONG_CLICK 		= 108
 
 def artwork(file):
-	if   file == 'button': return os.path.join(SKINFOLD, 'Button', 'button-focus_lightblue.png'), os.path.join(SKINFOLD, 'Button', 'button-focus_grey.png')
-	elif file == 'radio' : return os.path.join(SKINFOLD, 'RadioButton', 'MenuItemFO.png'), os.path.join(SKINFOLD, 'RadioButton', 'MenuItemNF.png'), os.path.join(SKINFOLD, 'RadioButton', 'radiobutton-focus.png'), os.path.join(SKINFOLD, 'RadioButton', 'radiobutton-nofocus.png')
-	elif file == 'slider': return os.path.join(SKINFOLD, 'Slider', 'osd_slider_nib.png'), os.path.join(SKINFOLD, 'Slider', 'osd_slider_nibNF.png'), os.path.join(SKINFOLD, 'Slider', 'slider1.png'), os.path.join(SKINFOLD, 'Slider', 'slider1.png')
+	if   file == 'button': return os.path.join(vars.SKINFOLD, 'Button', 'button-focus_lightblue.png'), os.path.join(vars.SKINFOLD, 'Button', 'button-focus_grey.png')
+	elif file == 'radio' : return os.path.join(vars.SKINFOLD, 'RadioButton', 'MenuItemFO.png'), os.path.join(vars.SKINFOLD, 'RadioButton', 'MenuItemNF.png'), os.path.join(vars.SKINFOLD, 'RadioButton', 'radiobutton-focus.png'), os.path.join(vars.SKINFOLD, 'RadioButton', 'radiobutton-nofocus.png')
+	elif file == 'slider': return os.path.join(vars.SKINFOLD, 'Slider', 'osd_slider_nib.png'), os.path.join(vars.SKINFOLD, 'Slider', 'osd_slider_nibNF.png'), os.path.join(vars.SKINFOLD, 'Slider', 'slider1.png'), os.path.join(vars.SKINFOLD, 'Slider', 'slider1.png')
 
 def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 	class MyWindow(xbmcgui.WindowDialog):
@@ -54,11 +54,11 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			buttonfocus, buttonnofocus = artwork('button')
 			radiobgfocus, radiobgnofocus, radiofocus, radionofocus = artwork('radio')
 			slidernibfocus, slidernibnofocus, sliderfocus, slidernofocus = artwork('slider')
-			image_path = os.path.join(ART, 'ContentPanel.png')
-			boxbg = os.path.join(ART, 'bgg2.png')
+			image_path = os.path.join(vars.ART, 'ContentPanel.png')
+			boxbg = os.path.join(vars.ART, 'bgg2.png')
 			self.border = xbmcgui.ControlImage(L,T,W,H, image_path)
 			self.addControl(self.border);
-			self.BG=xbmcgui.ControlImage(L+BorderWidth,T+BorderWidth,W-(BorderWidth*2),H-(BorderWidth*2), FANART, aspectRatio=0, colorDiffuse='0x5FFFFFFF')
+			self.BG=xbmcgui.ControlImage(L+BorderWidth,T+BorderWidth,W-(BorderWidth*2),H-(BorderWidth*2), vars.FANART, aspectRatio=0, colorDiffuse='0x5FFFFFFF')
 			self.addControl(self.BG)
 			top = T+BorderWidth
 			leftside = L+BorderWidth
@@ -67,7 +67,7 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			secondrow = firstrow+275+(BorderWidth/2)
 			currentwidth = ((W/2)-(BorderWidth*4))/2
 
-			header = '[COLOR %s]Advanced Settings Configurator[/COLOR]' % (COLOR2)
+			header = '[COLOR %s]Advanced Settings Configurator[/COLOR]' % (vars.COLOR2)
 			self.Header=xbmcgui.ControlLabel(L, top, W, 30, header, font='font13', textColor=TxtColor, alignment=0x00000002)
 			self.addControl(self.Header)
 			top += 30+BorderWidth
@@ -80,12 +80,12 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			self.bgarea4 = xbmcgui.ControlImage(rightside+BorderWidth+BorderWidth, secondrow, rightside-L, 275, boxbg, aspectRatio=0, colorDiffuse='0x5FFFFFFF')
 			self.addControl(self.bgarea4)
 
-			header = '[COLOR %s]Video Cache Size[/COLOR]' % (COLOR2)
+			header = '[COLOR %s]Video Cache Size[/COLOR]' % (vars.COLOR2)
 			self.Header2=xbmcgui.ControlLabel(leftside+BorderWidth, firstrow+5, (W/2)-(BorderWidth*2), 20, header, font='font13', textColor=TxtColor, alignment=0x00000002)
 			self.addControl(self.Header2)
-			freeMemory = int(float(wiz.getInfo('System.Memory(free)')[:-2])*.33)
-			recMemory = int(float(wiz.getInfo('System.Memory(free)')[:-2])*.23)
-			msg3 = "[COLOR %s]Number of bytes used for buffering streams in memory.  When set to [COLOR %s]0[/COLOR] the cache will be written to disk instead of RAM.  Note: For the memory size set here, Kodi will require 3x the amount of RAM to be free. Setting this too high might cause Kodi to crash if it can't get enough RAM(1/3 of Free Memory: [COLOR %s]%s[/COLOR])[/COLOR]" % (COLOR2, COLOR1, COLOR1, freeMemory)
+			freeMemory = int(float(xbmc.getInfoLabel('System.Memory(free)')[:-2])*.33)
+			recMemory = int(float(xbmc.getInfoLabel('System.Memory(free)')[:-2])*.23)
+			msg3 = "[COLOR %s]Number of bytes used for buffering streams in memory.  When set to [COLOR %s]0[/COLOR] the cache will be written to disk instead of RAM.  Note: For the memory size set here, Kodi will require 3x the amount of RAM to be free. Setting this too high might cause Kodi to crash if it can't get enough RAM(1/3 of Free Memory: [COLOR %s]%s[/COLOR])[/COLOR]" % (vars.COLOR2, vars.COLOR1, vars.COLOR1, freeMemory)
 			self.Support3=xbmcgui.ControlTextBox(leftside+int(BorderWidth*1.5), firstrow+30+BorderWidth, (W/2)-(BorderWidth*4), 150, font='font12', textColor=TxtColor)
 			self.addControl(self.Support3)
 			self.Support3.setText(msg3)
@@ -94,10 +94,10 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			self.addControl(self.videoCacheSize)
 			self.videomin = 0; self.videomax = freeMemory if freeMemory < 2000 else 2000
 			self.recommendedVideo = recMemory if recMemory < 500 else 500; self.currentVideo = self.recommendedVideo
-			videopos = wiz.percentage(self.currentVideo, self.videomax)
+			videopos = tools.percentage(self.currentVideo, self.videomax)
 			self.videoCacheSize.setPercent(videopos)
-			current1 = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (COLOR1, COLOR2, self.currentVideo)
-			recommended1 = '[COLOR %s]Recommended:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (COLOR1, COLOR2, self.recommendedVideo)
+			current1 = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.currentVideo)
+			recommended1 = '[COLOR %s]Recommended:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.recommendedVideo)
 			self.currentVideo1=xbmcgui.ControlTextBox(leftside+BorderWidth,firstrow+235,currentwidth,20,font=Font,textColor=TxtColor)
 			self.addControl(self.currentVideo1)
 			self.currentVideo1.setText(current1)
@@ -105,10 +105,10 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			self.addControl(self.recommendedVideo1)
 			self.recommendedVideo1.setText(recommended1)
 
-			header = '[COLOR %s]CURL Timeout/CURL Low Speed[/COLOR]' % (COLOR2)
+			header = '[COLOR %s]CURL Timeout/CURL Low Speed[/COLOR]' % (vars.COLOR2)
 			self.Header3=xbmcgui.ControlLabel(rightside+BorderWidth, firstrow+5, (W/2)-(BorderWidth*2), 20, header, font='font13', textColor=TxtColor, alignment=0x00000002)
 			self.addControl(self.Header3)
-			msg3 = "[COLOR %s][B]curlclienttimeout[/B] is the time in seconds for how long it takes for libcurl connection will timeout and [B]curllowspeedtime[/B] is the time in seconds for libcurl to consider a connection lowspeed.  For slower connections set it to 20.[/COLOR]" % COLOR2
+			msg3 = "[COLOR %s][B]curlclienttimeout[/B] is the time in seconds for how long it takes for libcurl connection will timeout and [B]curllowspeedtime[/B] is the time in seconds for libcurl to consider a connection lowspeed.  For slower connections set it to 20.[/COLOR]" % vars.COLOR2
 			self.Support3=xbmcgui.ControlTextBox(rightside+int(BorderWidth*3.5), firstrow+30+BorderWidth, (W/2)-(BorderWidth*4), 150, font='font12', textColor=TxtColor)
 			self.addControl(self.Support3)
 			self.Support3.setText(msg3)
@@ -117,10 +117,10 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			self.addControl(self.CURLTimeout)
 			self.curlmin = 0; self.curlmax = 20
 			self.recommendedCurl = 10; self.currentCurl = self.recommendedCurl
-			curlpos = wiz.percentage(self.currentCurl, self.curlmax)
+			curlpos = tools.percentage(self.currentCurl, self.curlmax)
 			self.CURLTimeout.setPercent(curlpos)
-			current2 = '[COLOR %s]Current:[/COLOR] [COLOR %s]%ss[/COLOR]' % (COLOR1, COLOR2, self.currentCurl)
-			recommended2 = '[COLOR %s]Recommended:[/COLOR] [COLOR %s]%ss[/COLOR]' % (COLOR1, COLOR2, self.recommendedCurl)
+			current2 = '[COLOR %s]Current:[/COLOR] [COLOR %s]%ss[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.currentCurl)
+			recommended2 = '[COLOR %s]Recommended:[/COLOR] [COLOR %s]%ss[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.recommendedCurl)
 			self.currentCurl2=xbmcgui.ControlTextBox(rightside+(BorderWidth*3),firstrow+235,currentwidth,20,font=Font,textColor=TxtColor)
 			self.addControl(self.currentCurl2)
 			self.currentCurl2.setText(current2)
@@ -128,10 +128,10 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			self.addControl(self.recommendedCurl2)
 			self.recommendedCurl2.setText(recommended2)
 
-			header = '[COLOR %s]Read Buffer Factor[/COLOR]' % (COLOR2)
+			header = '[COLOR %s]Read Buffer Factor[/COLOR]' % (vars.COLOR2)
 			self.Header4=xbmcgui.ControlLabel(leftside, secondrow+5, (W/2)-(BorderWidth*2), 20, header, font='font13', textColor=TxtColor, alignment=0x00000002)
 			self.addControl(self.Header4)
-			msg3 = "[COLOR %s]The value of this setting is a multiplier of the default limit. If Kodi is loading a typical bluray raw file at 36 Mbit/s, then a value of 2 will need at least 72 Mbit/s of network bandwidth. However, unlike with the RAM setting, you can safely increase this value however high you want, and Kodi won't crash.[/COLOR]" % COLOR2
+			msg3 = "[COLOR %s]The value of this setting is a multiplier of the default limit. If Kodi is loading a typical bluray raw file at 36 Mbit/s, then a value of 2 will need at least 72 Mbit/s of network bandwidth. However, unlike with the RAM setting, you can safely increase this value however high you want, and Kodi won't crash.[/COLOR]" % vars.COLOR2
 			self.Support3=xbmcgui.ControlTextBox(leftside+int(BorderWidth*1.5), secondrow+30+BorderWidth, (W/2)-(BorderWidth*4), 150, font='font12', textColor=TxtColor)
 			self.addControl(self.Support3)
 			self.Support3.setText(msg3)
@@ -140,10 +140,10 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			self.addControl(self.readBufferFactor)
 			self.readmin = 0; self.readmax = 10
 			self.recommendedRead = 5; self.currentRead = self.recommendedRead
-			readpos = wiz.percentage(self.currentRead, self.readmax)
+			readpos = tools.percentage(self.currentRead, self.readmax)
 			self.readBufferFactor.setPercent(readpos)
-			current3 = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s[/COLOR]' % (COLOR1, COLOR2, self.currentRead)
-			recommended3 = '[COLOR %s]Recommended:[/COLOR] [COLOR %s]%s[/COLOR]' % (COLOR1, COLOR2, self.recommendedRead)
+			current3 = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.currentRead)
+			recommended3 = '[COLOR %s]Recommended:[/COLOR] [COLOR %s]%s[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.recommendedRead)
 			self.currentRead3=xbmcgui.ControlTextBox(leftside+BorderWidth,secondrow+235,currentwidth,20,font=Font,textColor=TxtColor)
 			self.addControl(self.currentRead3)
 			self.currentRead3.setText(current3)
@@ -151,10 +151,10 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			self.addControl(self.recommendedRead3)
 			self.recommendedRead3.setText(recommended3)
 
-			header = '[COLOR %s]Buffer Mode[/COLOR]' % (COLOR2)
+			header = '[COLOR %s]Buffer Mode[/COLOR]' % (vars.COLOR2)
 			self.Header4=xbmcgui.ControlLabel(rightside+BorderWidth, secondrow+5, (W/2)-(BorderWidth*2), 20, header, font='font13', textColor=TxtColor, alignment=0x00000002)
 			self.addControl(self.Header4)
-			msg4 = "[COLOR %s]This setting will force Kodi to use a cache for all video files, including local network, internet, and even the local hard drive. Default value is 0 and will only cache videos that use internet file paths/sources.[/COLOR]" % COLOR2
+			msg4 = "[COLOR %s]This setting will force Kodi to use a cache for all video files, including local network, internet, and even the local hard drive. Default value is 0 and will only cache videos that use internet file paths/sources.[/COLOR]" % vars.COLOR2
 			self.Support4=xbmcgui.ControlTextBox(rightside+int(BorderWidth*3.5), secondrow+30+BorderWidth, (W/2)-(BorderWidth*4), 110, font='font12', textColor=TxtColor)
 			self.addControl(self.Support4)
 			self.Support4.setText(msg4)
@@ -193,17 +193,17 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 		def updateCurrent(self, control):
 			if control == self.videoCacheSize:
 				self.currentVideo = (self.videomax)*self.videoCacheSize.getPercent()/100
-				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (COLOR1, COLOR2, int(self.currentVideo))
+				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (vars.COLOR1, vars.COLOR2, int(self.currentVideo))
 				self.currentVideo1.setText(current)
 
 			elif control == self.CURLTimeout:
 				self.currentCurl = (self.curlmax)*self.CURLTimeout.getPercent()/100
-				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%ss[/COLOR]' % (COLOR1, COLOR2, int(self.currentCurl))
+				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%ss[/COLOR]' % (vars.COLOR1, vars.COLOR2, int(self.currentCurl))
 				self.currentCurl2.setText(current)
 
 			elif control == self.readBufferFactor:
 				self.currentRead = (self.readmax)*self.readBufferFactor.getPercent()/100
-				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s[/COLOR]' % (COLOR1, COLOR2, int(self.currentRead))
+				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s[/COLOR]' % (vars.COLOR1, vars.COLOR2, int(self.currentRead))
 				self.currentRead3.setText(current)
 
 			elif control in [self.Button0, self.Button1, self.Button2, self.Button3]:
@@ -221,13 +221,13 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 			elif self.Button1.isSelected(): buffermode = 1
 			elif self.Button2.isSelected(): buffermode = 2
 			elif self.Button3.isSelected(): buffermode = 3
-			if os.path.exists(ADVANCED):
-				choice = DIALOG.yesno(ADDONTITLE, "[COLOR %s]There is currently an active [COLOR %s]AdvancedSettings.xml[/COLOR], would you like to remove it and continue?[/COLOR]" % (COLOR2, COLOR1), yeslabel="[B][COLOR springgreen]Remove Settings[/COLOR][/B]", nolabel="[B][COLOR red]Cancel Write[/COLOR][/B]")
+			if os.path.exists(vars.ADVANCED):
+				choice = xbmcgui.Dialog().yesno(vars.ADDONTITLE, "[COLOR %s]There is currently an active [COLOR %s]AdvancedSettings.xml[/COLOR], would you like to remove it and continue?[/COLOR]" % (vars.COLOR2, vars.COLOR1), yeslabel="[B][COLOR springgreen]Remove Settings[/COLOR][/B]", nolabel="[B][COLOR red]Cancel Write[/COLOR][/B]")
 				if choice == 0: return
-				try: os.remove(ADVANCED)
-				except: f = open(ADVANCED, 'w'); f.close()
-			if KODIV < 17:
-				with open(ADVANCED, 'w+') as f:
+				try: os.remove(vars.ADVANCED)
+				except: f = open(vars.ADVANCED, 'w'); f.close()
+			if vars.KODIV < 17:
+				with open(vars.ADVANCED, 'w+') as f:
 					f.write('<advancedsettings>\n')
 					f.write('	<network>\n')
 					f.write('		<buffermode>%s</buffermode>\n' % buffermode)
@@ -239,7 +239,7 @@ def autoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font12', BorderWidth=10):
 					f.write('</advancedsettings>\n')
 				f.close()
 			else:
-				with open(ADVANCED, 'w+') as f:
+				with open(vars.ADVANCED, 'w+') as f:
 					f.write('<advancedsettings>\n')
 					f.write('	<cache>\n')
 					f.write('		<buffermode>%s</buffermode>\n' % buffermode)
@@ -280,31 +280,31 @@ def QautoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font10', BorderWidth=10):
 		scr={};
 		def __init__(self,msg='',L=0,T=0,W=1280,H=720,TxtColor='0xFFFFFFFF',Font='font10',BorderWidth=10):
 			buttonfocus, buttonnofocus = artwork('button')
-			self.BG=xbmcgui.ControlImage(L+BorderWidth,T+BorderWidth,W-(BorderWidth*2),H-(BorderWidth*2), FANART, aspectRatio=0)
+			self.BG=xbmcgui.ControlImage(L+BorderWidth,T+BorderWidth,W-(BorderWidth*2),H-(BorderWidth*2), vars.FANART, aspectRatio=0)
 			self.addControl(self.BG)
 			top = T+BorderWidth
 			leftside = L+BorderWidth
 			rightside = L+(W/2)-(BorderWidth*2)
-			header = '[COLOR %s]Quick Advanced Settings Configurator[/COLOR]' % (COLOR2)
+			header = '[COLOR %s]Quick Advanced Settings Configurator[/COLOR]' % (vars.COLOR2)
 			self.Header=xbmcgui.ControlLabel(L, top, W, 30, header, font='font13', textColor=TxtColor, alignment=0x00000002)
 			self.addControl(self.Header)
 			top += 30+BorderWidth
-			freeMemory = int(float(wiz.getInfo('System.Memory(free)')[:-2])*.33)
-			recMemory = int(float(wiz.getInfo('System.Memory(free)')[:-2])*.23)
+			freeMemory = int(float(xbmc.getInfoLabel('System.Memory(free)')[:-2])*.33)
+			recMemory = int(float(xbmc.getInfoLabel('System.Memory(free)')[:-2])*.23)
 			self.videomin = 0; self.videomax = freeMemory if freeMemory < 2000 else 2000
 			self.recommendedVideo = recMemory if recMemory < 500 else 500; self.currentVideo = self.recommendedVideo
-			current1 = '[COLOR %s]Video Cache Size[/COLOR]=[COLOR %s]%s MB[/COLOR]' % (COLOR1, COLOR2, self.currentVideo)
-			recommended1 = '[COLOR %s]Video Cache Size:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (COLOR1, COLOR2, self.recommendedVideo)
+			current1 = '[COLOR %s]Video Cache Size[/COLOR]=[COLOR %s]%s MB[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.currentVideo)
+			recommended1 = '[COLOR %s]Video Cache Size:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.recommendedVideo)
 			self.curlmin = 0; self.curlmax = 20
 			self.recommendedCurl = 10; self.currentCurl = self.recommendedCurl
-			curlpos = wiz.percentage(self.currentCurl, self.curlmax)
-			recommended2 = '[COLOR %s]CURL Timeout/CURL Low Speed:[/COLOR] [COLOR %s]%ss[/COLOR]' % (COLOR1, COLOR2, self.recommendedCurl)
+			curlpos = tools.percentage(self.currentCurl, self.curlmax)
+			recommended2 = '[COLOR %s]CURL Timeout/CURL Low Speed:[/COLOR] [COLOR %s]%ss[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.recommendedCurl)
 			self.readmin = 0; self.readmax = 10
 			self.recommendedRead = 5; self.currentRead = self.recommendedRead
-			readpos = wiz.percentage(self.currentRead, self.readmax)
-			recommended3 = '[COLOR %s]Read Buffer Factor:[/COLOR] [COLOR %s]%s[/COLOR]' % (COLOR1, COLOR2, self.recommendedRead)
-			recommended4 = '[COLOR %s]Buffer Mode:[/COLOR] [COLOR %s]2[/COLOR]' %(COLOR1, COLOR2)
-			msgbox='[COLOR %s]These settings will be written to the advancesettings.xml[/COLOR]\r\n\r\n%s\r\n%s\r\n%s\r\n%s' %(COLOR1, recommended4, recommended1, recommended3, recommended2)
+			readpos = tools.percentage(self.currentRead, self.readmax)
+			recommended3 = '[COLOR %s]Read Buffer Factor:[/COLOR] [COLOR %s]%s[/COLOR]' % (vars.COLOR1, vars.COLOR2, self.recommendedRead)
+			recommended4 = '[COLOR %s]Buffer Mode:[/COLOR] [COLOR %s]2[/COLOR]' %(vars.COLOR1, vars.COLOR2)
+			msgbox='[COLOR %s]These settings will be written to the advancesettings.xml[/COLOR]\r\n\r\n%s\r\n%s\r\n%s\r\n%s' %(vars.COLOR1, recommended4, recommended1, recommended3, recommended2)
 			self.box=xbmcgui.ControlTextBox(L+25,T+50,W,H, font='font14')
 			self.addControl(self.box)
 			self.box.setText(msgbox)
@@ -319,27 +319,27 @@ def QautoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font10', BorderWidth=10):
 		def updateCurrent(self, control):
 			if control == self.videoCacheSize:
 				self.currentVideo = (self.videomax)*self.videoCacheSize.getPercent()/100
-				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (COLOR1, COLOR2, int(self.currentVideo))
+				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s MB[/COLOR]' % (vars.COLOR1, vars.COLOR2, int(self.currentVideo))
 				self.currentVideo1.setText(current)
 
 			elif control == self.CURLTimeout:
 				self.currentCurl = (self.curlmax)*self.CURLTimeout.getPercent()/100
-				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%ss[/COLOR]' % (COLOR1, COLOR2, int(self.currentCurl))
+				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%ss[/COLOR]' % (vars.COLOR1, vars.COLOR2, int(self.currentCurl))
 				self.currentCurl2.setText(current)
 
 			elif control == self.readBufferFactor:
 				self.currentRead = (self.readmax)*self.readBufferFactor.getPercent()/100
-				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s[/COLOR]' % (COLOR1, COLOR2, int(self.currentRead))
+				current = '[COLOR %s]Current:[/COLOR] [COLOR %s]%s[/COLOR]' % (vars.COLOR1, vars.COLOR2, int(self.currentRead))
 				self.currentRead3.setText(current)
 		def doWrite(self):
 			buffermode = 2
-			if os.path.exists(ADVANCED):
-				choice = DIALOG.yesno(ADDONTITLE, "[COLOR %s]There is currently an active [COLOR %s]AdvancedSettings.xml[/COLOR], would you like to remove it and continue?[/COLOR]" % (COLOR2, COLOR1), yeslabel="[B][COLOR green]Remove Settings[/COLOR][/B]", nolabel="[B][COLOR red]Cancel Write[/COLOR][/B]")
+			if os.path.exists(vars.ADVANCED):
+				choice = xbmcgui.Dialog().yesno(vars.ADDONTITLE, "[COLOR %s]There is currently an active [COLOR %s]AdvancedSettings.xml[/COLOR], would you like to remove it and continue?[/COLOR]" % (vars.COLOR2, vars.COLOR1), yeslabel="[B][COLOR green]Remove Settings[/COLOR][/B]", nolabel="[B][COLOR red]Cancel Write[/COLOR][/B]")
 				if choice == 0: return
-				try: os.remove(ADVANCED)
-				except: f = open(ADVANCED, 'w'); f.close()
-			if KODIV < 17:
-				with open(ADVANCED, 'w+') as f:
+				try: os.remove(vars.ADVANCED)
+				except: f = open(vars.ADVANCED, 'w'); f.close()
+			if vars.KODIV < 17:
+				with open(vars.ADVANCED, 'w+') as f:
 					f.write('<advancedsettings>\n')
 					f.write('	<network>\n')
 					f.write('		<buffermode>%s</buffermode>\n' % buffermode)
@@ -351,7 +351,7 @@ def QautoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font10', BorderWidth=10):
 					f.write('</advancedsettings>\n')
 				f.close()
 			else:
-				with open(ADVANCED, 'w+') as f:
+				with open(vars.ADVANCED, 'w+') as f:
 					f.write('<advancedsettings>\n')
 					f.write('	<cache>\n')
 					f.write('		<buffermode>%s</buffermode>\n' % buffermode)
@@ -364,7 +364,7 @@ def QautoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font10', BorderWidth=10):
 					f.write('	</network>\n')
 					f.write('</advancedsettings>\n')
 				f.close()
-				wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]AdvancedSettings.xml have been written[/COLOR]' % COLOR2)
+				tools.log_notify("[COLOR %s]%s[/COLOR]" % (vars.COLOR1, vars.ADDONTITLE), '[COLOR %s]AdvancedSettings.xml have been written[/COLOR]' % vars.COLOR2)
 			self.CloseWindow()
 		def onControl(self, control):
 			if   control==self.buttonWrite: self.doWrite()
@@ -386,10 +386,10 @@ def QautoConfig(msg='', TxtColor='0xFFFFFFFF', Font='font10', BorderWidth=10):
 def contact(msg=""):
 	class MyWindow(xbmcgui.WindowXMLDialog):
 		def __init__(self, *args, **kwargs):
-			self.title = THEME3 % kwargs["title"]
+			self.title = vars.THEME3 % kwargs["title"]
 			self.image = kwargs["image"]
 			self.fanart = kwargs["fanart"]
-			self.msg = THEME2 % kwargs["msg"]
+			self.msg = vars.THEME2 % kwargs["msg"]
 
 		def onInit(self):
 			self.fanartimage = 101
@@ -411,7 +411,7 @@ def contact(msg=""):
 			if   action == ACTION_PREVIOUS_MENU: self.close()
 			elif action == ACTION_NAV_BACK: self.close()
 
-	cw = MyWindow( "Contact.xml" , ADDON.getAddonInfo('path'), 'DefaultSkin', title=ADDONTITLE, fanart=CONTACTFANART, image=CONTACTICON, msg=msg)
+	cw = MyWindow( "Contact.xml" , vars.ADDONPATH, 'DefaultSkin', title=vars.ADDONTITLE, fanart=vars.CONTACTFANART, image=vars.CONTACTICON, msg=msg)
 	cw.doModal()
 	del cw
 
@@ -433,7 +433,7 @@ def apkInstaller(apk):
 			self.close()
 
 	xbmc.executebuiltin('Skin.SetString(apkinstaller, Now that %s has been downloaded[CR]Click install on the next window!)' % apk)
-	popup = APKInstaller('APK.xml', ADDON.getAddonInfo('path'), 'DefaultSkin', close_time=34)
+	popup = APKInstaller('APK.xml', ADDONPATH, 'DefaultSkin', close_time=34)
 	popup.doModal()
 	del popup
 
@@ -459,7 +459,7 @@ def speedTest(img):
 		def CloseWindow(self):
 			self.close()
 
-	popup = speedTest('SpeedTest.xml', ADDON.getAddonInfo('path'), 'DefaultSkin', img=img)
+	popup = speedTest('SpeedTest.xml', ADDONPATH, 'DefaultSkin', img=img)
 	popup.doModal()
 	del popup
 
@@ -496,11 +496,11 @@ def firstRunSettings():
 									'keepwhitelist', 'clearcache', 'clearpackages',
 									'clearthumbs']
 			for item in self.controllist:
-				if wiz.getS(self.controlsettings[self.controllist.index(item)]) == 'true':
+				if vars.ADDON.getSetting(self.controlsettings[self.controllist.index(item)]) == 'true':
 					self.getControl(item).setSelected(True)
 
 		def showdialog(self):
-			self.getControl(self.title).setLabel(ADDONTITLE)
+			self.getControl(self.title).setLabel(vars.ADDONTITLE)
 			self.setFocus(self.getControl(self.okbutton))
 
 		def onClick(self, controlId):
@@ -509,22 +509,22 @@ def firstRunSettings():
 
 				for item in self.controllist:
 					at = self.controllist.index(item)
-					if self.getControl(item).isSelected(): wiz.setS(self.controlsettings[at], 'true')
-					else: wiz.setS(self.controlsettings[at], 'false')
+					if self.getControl(item).isSelected(): vars.ADDON.setSetting(self.controlsettings[at], 'true')
+					else: vars.ADDON.setSetting(self.controlsettings[at], 'false')
 
-				if self.getControl(self.whitelist).isSelected() and not self.whitelistcurrent == 'true':
-					wiz.whiteList('edit')
+				#if self.getControl(self.whitelist).isSelected() and not self.whitelistcurrent == 'true':
+					#wiz.whiteList('edit')
 
-	fr = firstRun( "FirstRunSaveData.xml" , ADDON.getAddonInfo('path'), 'DefaultSkin', current=wiz.getS('keepwhitelist'))
+	fr = firstRun( "FirstRunSaveData.xml" , vars.ADDONPATH, 'DefaultSkin', current=vars.ADDON.getSetting('keepwhitelist'))
 	fr.doModal()
 	del fr
 
 def firstRun():
 	class MyWindow(xbmcgui.WindowXMLDialog):
 		def __init__(self, *args, **kwargs):
-			self.title = THEME3 % ADDONTITLE
-			self.msg   = "Currently no build installed from %s.\n\nSelect 'Build Menu' to install a Community Build from us or 'Ignore' to never see this message again.\n\nThank you for choosing %s." % (ADDONTITLE, ADDONTITLE)
-			self.msg   = THEME2 % self.msg
+			self.title = vars.THEME3 % vars.ADDONTITLE
+			self.msg   = "Currently no build installed from %s.\n\nSelect 'Build Menu' to install a Community Build from us or 'Ignore' to never see this message again.\n\nThank you for choosing %s." % (vars.ADDONTITLE, vars.ADDONTITLE)
+			self.msg   = vars.THEME2 % self.msg
 
 		def onInit(self):
 			self.image     = 101
@@ -535,23 +535,23 @@ def firstRun():
 			self.showdialog()
 
 		def showdialog(self):
-			self.getControl(self.image).setImage(FANART)
+			self.getControl(self.image).setImage(vars.FANART)
 			self.getControl(self.image).setColorDiffuse('9FFFFFFF')
 			self.getControl(self.textbox).setText(self.msg)
 			self.getControl(self.titlebox).setLabel(self.title)
 			self.setFocusId(self.buildmenu)
 
 		def doBuildMenu(self):
-			wiz.log("[Check Updates] [User Selected: Open Build Menu] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGNOTICE)
-			wiz.setS('lastbuildcheck', str(NEXTCHECK))
+			tools.log("[Check Updates] [User Selected: Open Build Menu] [Next Check: %s]" % str(vars.NEXTCHECK), xbmc.LOGNOTICE)
+			vars.ADDON.setSetting('lastbuildcheck', str(vars.NEXTCHECK))
 			self.close()
-			url = 'plugin://%s/?mode=builds' % ADDON_ID
+			url = 'plugin://%s/?mode=builds' % vars.ADDON_ID
 			xbmc.executebuiltin('ActivateWindow(10025, "%s", return)' % url)
 
 		def doIgnore(self):
 			self.close()
-			wiz.log("[First Run] [User Selected: Ignore Build Menu] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGNOTICE)
-			wiz.setS('lastbuildcheck', str(NEXTCHECK))
+			tools.log("[First Run] [User Selected: Ignore Build Menu] [Next Check: %s]" % str(vars.NEXTCHECK), xbmc.LOGNOTICE)
+			vars.ADDON.setSetting('lastbuildcheck', str(vars.NEXTCHECK))
 
 		def onAction(self,action):
 			if   action == ACTION_PREVIOUS_MENU: self.doIgnore()
@@ -561,7 +561,7 @@ def firstRun():
 			if (controlId == self.buildmenu): self.doBuildMenu()
 			else: self.doIgnore()
 
-	fr = MyWindow( "FirstRunBuild.xml" , ADDON.getAddonInfo('path'), 'DefaultSkin')
+	fr = MyWindow( "FirstRunBuild.xml" , vars.ADDONPATH, 'DefaultSkin')
 	fr.doModal()
 	del fr
 
@@ -569,7 +569,7 @@ def notification(msg='', test=False):
 	class MyWindow(xbmcgui.WindowXMLDialog):
 		def __init__(self, *args, **kwargs):
 			self.test = kwargs['test']
-			self.message =  THEME2 % kwargs['msg']
+			self.message =  vars.THEME2 % kwargs['msg']
 
 		def onInit(self):
 			self.image       = 101
@@ -582,26 +582,26 @@ def notification(msg='', test=False):
 			self.showdialog()
 
 		def showdialog(self):
-			self.testimage = os.path.join(ART, 'text.png')
-			self.getControl(self.image).setImage(BACKGROUND)
+			self.testimage = os.path.join(vars.ART, 'text.png')
+			self.getControl(self.image).setImage(vars.BACKGROUND)
 			self.getControl(self.image).setColorDiffuse('9FFFFFFF')
 			self.getControl(self.textbox).setText(self.message)
 			self.setFocusId(self.remindme)
-			if HEADERTYPE == 'Text':
-				self.getControl(self.titlebox).setLabel(THEME3 % HEADERMESSAGE)
+			if vars.HEADERTYPE == 'Text':
+				self.getControl(self.titlebox).setLabel(vars.THEME3 % vars.HEADERMESSAGE)
 			else:
-				self.getControl(self.titleimage).setImage(HEADERIMAGE)
+				self.getControl(self.titleimage).setImage(vars.HEADERIMAGE)
 
 		def doRemindMeLater(self):
-			if not test == True:
-				wiz.setS("notedismiss","false")
-			wiz.log("[Notification] NotifyID %s Remind Me Later" % wiz.getS('noteid'), xbmc.LOGNOTICE)
+			if not test:
+				vars.ADDON.setSetting("notedismiss","false")
+			tools.log("[Notification] NotifyID %s Remind Me Later" % vars.ADDON.getSetting('noteid'), xbmc.LOGNOTICE)
 			self.close()
 
 		def doDismiss(self):
-			if not test == True:
-				wiz.setS("notedismiss","true")
-			wiz.log("[Notification] NotifyID %s Dismissed" % wiz.getS('noteid'), xbmc.LOGNOTICE)
+			if not test:
+				vars.ADDON.setSetting("notedismiss","true")
+			tools.log("[Notification] NotifyID %s Dismissed" % vars.ADDON.getSetting('noteid'), xbmc.LOGNOTICE)
 			self.close()
 
 		def onAction(self,action):
@@ -612,22 +612,23 @@ def notification(msg='', test=False):
 			if (controlId == self.dismiss): self.doDismiss()
 			else: self.doRemindMeLater()
 
-	xbmc.executebuiltin('Skin.SetString(headertexttype, %s)' % 'true' if HEADERTYPE == 'Text' else 'false')
-	xbmc.executebuiltin('Skin.SetString(headerimagetype, %s)' % 'true' if HEADERTYPE == 'Image' else 'false')
-	notify = MyWindow( "Notifications.xml" , ADDON.getAddonInfo('path'), 'DefaultSkin', msg=msg, test=test)
+	xbmc.executebuiltin('Skin.SetString(headertexttype, %s)' % 'true' if vars.HEADERTYPE == 'Text' else 'false')
+	xbmc.executebuiltin('Skin.SetString(headerimagetype, %s)' % 'true' if vars.HEADERTYPE == 'Image' else 'false')
+	notify = MyWindow( "Notifications.xml" , vars.ADDONPATH, 'DefaultSkin', msg=msg, test=test)
 	notify.doModal()
 	del notify
 
-def updateWindow(name='Testing Window', current='1.0', new='1.1', icon=ICON, fanart=FANART):
+
+def updateWindow(name='Testing Window', current='1.0', new='1.1', icon=vars.ICON, fanart=vars.FANART):
 	class MyWindow(xbmcgui.WindowXMLDialog):
 		def __init__(self, *args, **kwargs):
-			self.name = THEME3 % kwargs['name']
+			self.name = vars.THEME3 % kwargs['name']
 			self.current = kwargs['current']
 			self.new = kwargs['new']
 			self.icon = kwargs['icon']
 			self.fanart = kwargs['fanart']
-			self.msgupdate  = "Update avaliable for installed build:\n[COLOR %s]%s[/COLOR]\n\nCurrent Version: v[COLOR %s]%s[/COLOR]\nLatest Version: v[COLOR %s]%s[/COLOR]\n\n[COLOR %s]*Recommened: Fresh install[/COLOR]" % (COLOR1, self.name, COLOR1, self.current, COLOR1, self.new, COLOR1)
-			self.msgcurrent = "Running latest version of installed build:\n[COLOR %s]%s[/COLOR]\n\nCurrent Version: v[COLOR %s]%s[/COLOR]\nLatest Version: v[COLOR %s]%s[/COLOR]\n\n[COLOR %s]*Recommended: Fresh install[/COLOR]" % (COLOR1, self.name, COLOR1, self.current, COLOR1, self.new, COLOR1)
+			self.msgupdate  = "Update avaliable for installed build:\n[COLOR %s]%s[/COLOR]\n\nCurrent Version: v[COLOR %s]%s[/COLOR]\nLatest Version: v[COLOR %s]%s[/COLOR]\n\n[COLOR %s]*Recommened: Fresh install[/COLOR]" % (vars.COLOR1, self.name, vars.COLOR1, self.current, vars.COLOR1, self.new, vars.COLOR1)
+			self.msgcurrent = "Running latest version of installed build:\n[COLOR %s]%s[/COLOR]\n\nCurrent Version: v[COLOR %s]%s[/COLOR]\nLatest Version: v[COLOR %s]%s[/COLOR]\n\n[COLOR %s]*Recommended: Fresh install[/COLOR]" % (vars.COLOR1, self.name, vars.COLOR1, self.current, vars.COLOR1, self.new, vars.COLOR1)
 
 		def onInit(self):
 			self.imagefanart = 101
@@ -641,32 +642,32 @@ def updateWindow(name='Testing Window', current='1.0', new='1.1', icon=ICON, fan
 
 		def showdialog(self):
 			self.getControl(self.header).setLabel(self.name)
-			self.getControl(self.textbox).setText(THEME2 % self.msgupdate if current < new else self.msgcurrent)
+			self.getControl(self.textbox).setText(vars.THEME2 % self.msgupdate if current < new else self.msgcurrent)
 			self.getControl(self.imagefanart).setImage(self.fanart)
 			self.getControl(self.imagefanart).setColorDiffuse('2FFFFFFF')
 			self.getControl(self.imageicon).setImage(self.icon)
 			self.setFocusId(self.fresh)
 
 		def doFreshInstall(self):
-			wiz.log("[Check Updates] [Installed Version: %s] [Current Version: %s] [User Selected: Fresh Install build]" % (BUILDVERSION, LATESTVERSION), xbmc.LOGNOTICE)
-			wiz.log("[Check Updates] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGNOTICE)
-			wiz.setS('lastbuildcheck', str(NEXTCHECK))
+			tools.log("[Check Updates] [Installed Version: %s] [Current Version: %s] [User Selected: Fresh Install build]" % (vars.BUILDVERSION, '0'), xbmc.LOGNOTICE)
+			tools.log("[Check Updates] [Next Check: %s]" % str(vars.NEXTCHECK), xbmc.LOGNOTICE)
+			vars.ADDON.setSetting('lastbuildcheck', str(vars.NEXTCHECK))
 			self.close()
-			url = 'plugin://%s/?mode=install&name=%s&url=fresh' % (ADDON_ID, urllib.quote_plus(BUILDNAME))
+			url = 'plugin://%s/?mode=install&name=%s&url=fresh' % (vars.ADDON_ID, urllib.quote_plus(vars.BUILDNAME))
 			xbmc.executebuiltin('RunPlugin(%s)' % url)
 
 		def doNormalInstall(self):
-			wiz.log("[Check Updates] [Installed Version: %s] [Current Version: %s] [User Selected: Normal Install build]" % (BUILDVERSION, LATESTVERSION), xbmc.LOGNOTICE)
-			wiz.log("[Check Updates] [Next Check: %s]" % str(NEXTCHECK), xbmc.LOGNOTICE)
-			wiz.setS('lastbuildcheck', str(NEXTCHECK))
+			tools.log("[Check Updates] [Installed Version: %s] [Current Version: %s] [User Selected: Normal Install build]" % (vars.BUILDVERSION, '0'), xbmc.LOGNOTICE)
+			tools.log("[Check Updates] [Next Check: %s]" % str(vars.NEXTCHECK), xbmc.LOGNOTICE)
+			vars.ADDON.setSetting('lastbuildcheck', str(vars.NEXTCHECK))
 			self.close()
-			url = 'plugin://%s/?mode=install&name=%s&url=normal' % (ADDON_ID, urllib.quote_plus(BUILDNAME))
+			url = 'plugin://%s/?mode=install&name=%s&url=normal' % (vars.ADDON_ID, urllib.quote_plus(vars.BUILDNAME))
 			xbmc.executebuiltin('RunPlugin(%s)' % url)
 
 		def doIgnore(self):
-			wiz.log("[Check Updates] [Installed Version: %s] [Current Version: %s] [User Selected: Ignore 3 Days]" % (BUILDVERSION, LATESTVERSION), xbmc.LOGNOTICE)
-			wiz.log("[Check Updates] [Next Check: %s]" % str(THREEDAYS), xbmc.LOGNOTICE)
-			wiz.setS('lastbuildcheck', str(THREEDAYS))
+			tools.log("[Check Updates] [Installed Version: %s] [Current Version: %s] [User Selected: Ignore 3 Days]" % (vars.BUILDVERSION, '0'), xbmc.LOGNOTICE)
+			tools.log("[Check Updates] [Next Check: %s]" % str(vars.THREEDAYS), xbmc.LOGNOTICE)
+			tools.setS('lastbuildcheck', str(vars.THREEDAYS))
 			self.close()
 
 		def onAction(self,action):
@@ -678,6 +679,6 @@ def updateWindow(name='Testing Window', current='1.0', new='1.1', icon=ICON, fan
 			elif (controlId == self.normal): self.doNormalInstall()
 			else: self.doIgnore()
 
-	update = MyWindow( "BuildUpdate.xml" , ADDON.getAddonInfo('path'), 'DefaultSkin', name=name, current=current, new=new, icon=icon, fanart=fanart)
+	update = MyWindow( "BuildUpdate.xml" , vars.ADDONPATH, 'DefaultSkin', name=name, current=current, new=new, icon=icon, fanart=fanart)
 	update.doModal()
 	del update

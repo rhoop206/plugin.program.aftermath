@@ -259,10 +259,6 @@ def LogNotify(title, message, times=2000, icon=ICON, sound=False):
 	# ebi('XBMC.Notification(%s, %s, %s, %s)' % (title, message, times, icon))
 
 
-def percentage(part, whole):
-	return 100 * float(part)/float(whole)
-
-
 def addonUpdates(do=None):
 	setting = '"general.addonupdates"'
 	if do == 'set':
@@ -553,14 +549,6 @@ def getSize(path, total=0):
 			fp = os.path.join(dirpath, f)
 			total += os.path.getsize(fp)
 	return total
-
-
-def convertSize(num, suffix='B'):
-	for unit in ['', 'K', 'M', 'G']:
-		if abs(num) < 1024.0:
-			return "%3.02f %s%s" % (num, unit, suffix)
-		num /= 1024.0
-	return "%.02f %s%s" % (num, 'G', suffix)
 
 
 def getCacheSize():
@@ -1099,7 +1087,7 @@ def convertSpecial(url, over=False):
 	for root, dirs, files in os.walk(url):
 		for file in files:
 			start += 1
-			perc = int(percentage(start, total))
+			perc = int(tools.percentage(start, total))
 			if file.endswith(".xml") or file.endswith(".hash") or file.endswith(".properties"):
 				DP.update(perc, "[COLOR {0}]Scanning: [COLOR {1}]{2}[/COLOR]".format(COLOR2, COLOR1, root.replace(HOME, '')),
 						  "[COLOR {0}]{1}[/COLOR]".format(COLOR1, file), "Please Wait[/COLOR]")
@@ -1265,7 +1253,7 @@ def convertText():
 		if len(match2) == 0:
 			for name, version, url, gui, kodi, theme, icon, fanart in match:
 				x += 1
-				DP.update(int(percentage(x, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
+				DP.update(int(tools.percentage(x, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
 				if not writing == '': writing += '\n'
 				writing += 'name="%s"\n' % name
 				writing += 'version="%s"\n' % version
@@ -1288,7 +1276,7 @@ def convertText():
 					match3 = re.compile('name="(.+?)".+?rl="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?escription="(.+?)"').findall(a)
 					for name, url, icon, fanart, description in match3:
 						x2 += 1
-						DP.update(int(percentage(x2, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
+						DP.update(int(tools.percentage(x2, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
 						if not themewrite == '': themewrite += '\n'
 						themewrite += 'name="%s"\n' % name
 						themewrite += 'url="%s"\n' % url
@@ -1300,7 +1288,7 @@ def convertText():
 		else:
 			for name, version, url, gui, kodi, theme, icon, fanart, preview, adult, description in match2:
 				x += 1
-				DP.update(int(percentage(x, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
+				DP.update(int(tools.percentage(x, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
 				if not writing == '': writing += '\n'
 				writing += 'name="%s"\n' % name
 				writing += 'version="%s"\n' % version
@@ -1323,7 +1311,7 @@ def convertText():
 					match3 = re.compile('name="(.+?)".+?rl="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?escription="(.+?)"').findall(a)
 					for name, url, icon, fanart, description in match3:
 						x2 += 1
-						DP.update(int(percentage(x2, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
+						DP.update(int(tools.percentage(x2, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
 						if not themewrite == '': themewrite += '\n'
 						themewrite += 'name="%s"\n' % name
 						themewrite += 'url="%s"\n' % url
@@ -1343,7 +1331,7 @@ def convertText():
 		if len(match2) == 0:
 			for name, url, icon, fanart in match:
 				x += 1
-				DP.update(int(percentage(x, len(match))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
+				DP.update(int(tools.percentage(x, len(match))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
 				if not writing == '': writing += '\n'
 				writing += 'name="%s"\n' % name
 				writing += 'section="no"'
@@ -1355,7 +1343,7 @@ def convertText():
 		else:
 			for name, url, icon, fanart, adult, description in match2:
 				x += 1
-				DP.update(int(percentage(x, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
+				DP.update(int(tools.percentage(x, len(match2))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
 				if not writing == '': writing += '\n'
 				writing += 'name="%s"\n' % name
 				writing += 'section="no"'
@@ -1374,7 +1362,7 @@ def convertText():
 		match = re.compile('name="(.+?)".+?rl="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?escription="(.+?)"').findall(a)
 		for name, url, icon, fanart, description in match:
 			x += 1
-			DP.update(int(percentage(x, len(match))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
+			DP.update(int(tools.percentage(x, len(match))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
 			if not writing == '': writing += '\n'
 			writing += 'name="%s"\n' % name
 			writing += 'section="no"'
@@ -1392,7 +1380,7 @@ def convertText():
 		match = re.compile('name="(.+?)".+?rl="(.+?)".+?con="(.+?)".+?anart="(.+?)".+?escription="(.+?)"').findall(a)
 		for name, url, icon, fanart, description in match:
 			x += 1
-			DP.update(int(percentage(x, len(match))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
+			DP.update(int(tools.percentage(x, len(match))), '', "[COLOR %s]%s[/COLOR]" % (COLOR1, name))
 			if not writing == '': writing += '\n'
 			writing += 'name="%s"\n' % name
 			writing += 'section="no"'
@@ -1787,7 +1775,7 @@ def backUpOptions(type, name=""):
 				for file in files:
 					try:
 						for_progress += 1
-						progress = percentage(for_progress, N_ITEM)
+						progress = tools.percentage(for_progress, N_ITEM)
 						DP.update(int(progress), '[COLOR %s]Creating back up zip: [COLOR%s]%s[/COLOR] / [COLOR%s]%s[/COLOR]' % (COLOR2, COLOR1, for_progress, COLOR1, N_ITEM), '[COLOR %s]%s[/COLOR]' % (COLOR1, file), '')
 						fn = os.path.join(base, file)
 						if file in LOGFILES: log("[Back Up] Type = '%s': Ignore %s" % (type, file), xbmc.LOGNOTICE); continue
@@ -2110,7 +2098,7 @@ def backUpOptions(type, name=""):
 				for file in files:
 					try:
 						for_progress += 1
-						progress = percentage(for_progress, N_ITEM)
+						progress = tools.percentage(for_progress, N_ITEM)
 						DP.update(int(progress), '[COLOR %s]Creating back up zip: [COLOR%s]%s[/COLOR] / [COLOR%s]%s[/COLOR]' % (COLOR2, COLOR1, for_progress, COLOR1, N_ITEM), '[COLOR %s]%s[/COLOR]' % (COLOR1, file), '')
 						fn = os.path.join(base, file)
 						if file in LOGFILES: log("[Back Up] Type = '%s': Ignore %s" % (type, file), xbmc.LOGNOTICE); continue
@@ -2465,7 +2453,7 @@ def clearPackages(over=None):
 				file_count = 0
 				file_count += len(files)
 				if file_count > 0:
-					size = convertSize(getSize(PACKAGES))
+					size = tools.convert_size(getSize(PACKAGES))
 					if over: yes=1
 					else: yes=DIALOG.yesno("[COLOR %s]Delete Package Files" % COLOR2, "[COLOR %s]%s[/COLOR] files found / [COLOR %s]%s[/COLOR] in size." % (COLOR1, str(file_count), COLOR1, size), "Do you want to delete them?[/COLOR]", nolabel='[B][COLOR red]Don\'t Clear[/COLOR][/B]',yeslabel='[B][COLOR springgreen]Clear Packages[/COLOR][/B]')
 					if yes:
@@ -2501,7 +2489,7 @@ def clearPackagesStartup():
 							shutil.rmtree(file)
 						except Exception as e:
 							log("Failed to remove %s: %s" % (file, str(e), xbmc.LOGERROR))
-			if file_count > 0: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Packages: Success: %s[/COLOR]' % (COLOR2, convertSize(cleanupsize)))
+			if file_count > 0: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Packages: Success: %s[/COLOR]' % (COLOR2, tools.convert_size(cleanupsize)))
 			else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Packages: None Found![/COLOR]' % COLOR2)
 		except Exception as e:
 			LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Packages: Error![/COLOR]' % COLOR2)
@@ -2686,7 +2674,7 @@ def checkSources():
 		DP.create(ADDONTITLE, "[COLOR %s]Scanning Sources for Broken links[/COLOR]" % COLOR2)
 		for name, path, sharing in match2:
 			x     += 1
-			perc   = int(percentage(x, len(match2)))
+			perc   = int(tools.percentage(x, len(match2)))
 			DP.update(perc, '', "[COLOR %s]Checking [COLOR %s]%s[/COLOR]:[/COLOR]" % (COLOR2, COLOR1, name), "[COLOR %s]%s[/COLOR]" % (COLOR1, path))
 			if 'http' in path:
 				working = workingURL(path)
@@ -2734,7 +2722,7 @@ def checkRepos():
 	while start < sleeptime:
 		start += 1
 		if DP.iscanceled(): break
-		perc = int(percentage(start, sleeptime))
+		perc = int(tools.percentage(start, sleeptime))
 		DP.update(perc, '', '[COLOR %s]Checking: [/COLOR][COLOR %s]%s[/COLOR]' % (COLOR2, COLOR1, repolist[start-1].replace(ADDONS, '')[1:]))
 		xbmc.sleep(1000)
 	if DP.iscanceled():
@@ -3014,7 +3002,7 @@ def oldThumbs():
 			size += imagesize
 		except:
 			pass
-	removed = convertSize(size)
+	removed = tools.convert_size(size)
 	if len(images) > 0: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Thumbs: %s Files / %s MB[/COLOR]!' % (COLOR2, str(len(images)), removed))
 	else: LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), '[COLOR %s]Clear Thumbs: None Found![/COLOR]' % COLOR2)
 
