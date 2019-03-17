@@ -27,7 +27,24 @@ import glob
 import shutil
 import string
 import random
-import urllib
+
+try:
+    from urllib.parse import quote_plus as url_quote
+    from urllib.parse import unquote_plus as url_unquote
+    from urllib.parse import urljoin as urljoin
+    from urllib.request import urlretrieve as urlretrieve
+    from urllib.request import Request as urlrequest
+    from urllib.request import urlopen as urlopen
+    xbmc.log(msg='Aftermath Wizard:  Using Python 3 urrlib', level=xbmc.LOGDEBUG)
+except:
+    from urllib import quote_plus as url_quote
+    from urllib import unquote_plus as url_unquote
+    from urlparse import urljoin as urljoin
+    from urllib import urlretrieve as urlretrieve
+    from urllib import Request as urlrequest
+    from urllib import urlopen as urlopen
+    xbmc.log(msg='Aftermath Wizard:  Using Python 2 urrlib', level=xbmc.LOGDEBUG)
+
 import re
 import pyqrcode
 import os
@@ -36,9 +53,9 @@ from sqlite3 import dbapi2 as database
 
 # damn py2 -> py3
 try:
-	from html.parser import HTMLParser
+    from html.parser import HTMLParser
 except ImportError:
-	import HTMLParser
+    import HTMLParser
 
 import uservar
 from resources.libs import downloader
@@ -88,9 +105,9 @@ ONEWEEK        = TODAY + timedelta(days=7)
 
 KODIV            = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
 if KODIV > 17:
-	from resources.libs import zfile as zipfile
+    from resources.libs import zfile as zipfile
 else:
-	import zipfile
+    import zipfile
 
 EXCLUDES       = uservar.EXCLUDES
 CACHETEXT      = uservar.CACHETEXT
@@ -506,15 +523,15 @@ def workingURL(url):
 		return False
 	check = 0
 	status = ''
-	while check < 3:
-		check += 1
-		try:
-			req = urllib.request.Request(url)
-			req.add_header('User-Agent', USER_AGENT)
-			response = urllib.request.urlopen(req)
-			response.close()
-			status = True
-			break
+    while check < 3:
+        check += 1
+        try:
+            req = urlrequest(url)
+            req.add_header('User-Agent', USER_AGENT)
+            response = urlopen(req)
+            response.close()
+            status = True
+            break
 		except Exception as e:
 			status = str(e)
 			log("Working Url Error: %s [%s]" % (e, url))
@@ -523,12 +540,12 @@ def workingURL(url):
 
 
 def openURL(url):
-	req = urllib.request.Request(url)
-	req.add_header('User-Agent', USER_AGENT)
-	response = urllib.request.urlopen(req)
-	link=response.read()
-	response.close()
-	return link
+    req = urlrequest(url)
+    req.add_header('User-Agent', USER_AGENT)
+    response = urlopen(req)
+    link=response.read()
+    response.close()
+    return link
 
 ###########################
 #      Misc Functions     #
@@ -1089,14 +1106,14 @@ def convertSpecial(url, over=False):
 			start += 1
 			perc = int(tools.percentage(start, total))
 			if file.endswith(".xml") or file.endswith(".hash") or file.endswith(".properties"):
-				DP.update(perc, "[COLOR {0}]Scanning: [COLOR {1}]{2}[/COLOR]".format(COLOR2, COLOR1, root.replace(HOME, '')),
-						  "[COLOR {0}]{1}[/COLOR]".format(COLOR1, file), "Please Wait[/COLOR]")
-				a = open(os.path.join(root, file)).read()
-				encodedpath = urllib.parse.quote(HOME)
-				encodedpath2 = urllib.parse.quote(HOME).replace('%3A', '%3a').replace('%5C', '%5c')
-				b = a.replace(HOME, 'special://home/').replace(encodedpath, 'special://home/').replace(encodedpath2, 'special://home/')
-				f = open((os.path.join(root, file)), mode='w')
-				f.write(str(b))
+                DP.update(perc, "[COLOR {0}]Scanning: [COLOR {1}]{2}[/COLOR]".format(COLOR2, COLOR1, root.replace(HOME, '')),
+                          "[COLOR {0}]{1}[/COLOR]".format(COLOR1, file), "Please Wait[/COLOR]")
+                a = open(os.path.join(root, file)).read()
+                encodedpath = url_quote(HOME)
+                encodedpath2 = url_quote(HOME).replace('%3A', '%3a').replace('%5C', '%5c')
+                b = a.replace(HOME, 'special://home/').replace(encodedpath, 'special://home/').replace(encodedpath2, 'special://home/')
+                f = open((os.path.join(root, file)), mode='w')
+                f.write(str(b))
 				f.close()
 				if DP.iscanceled():
 					DP.close()
@@ -1614,13 +1631,13 @@ def backUpOptions(type, name=""):
 		return
 	if type == "addon pack":
 		if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Are you sure you wish to create an Addon Pack?[/COLOR]" % COLOR2, nolabel="[B][COLOR red]Cancel Backup[/COLOR][/B]", yeslabel="[B][COLOR springgreen]Create Pack[/COLOR][/B]"):
-			if name == "":
-				name = getKeyboard("","Please enter a name for the %s zip" % type)
-				if not name: return False
-				name = urllib.quote_plus(name)
-			name = '%s.zip' % name; tempzipname = ''
-			zipname = os.path.join(mybuilds, name)
-			try:
+            if name == "":
+                name = getKeyboard("","Please enter a name for the %s zip" % type)
+                if not name: return False
+                name = url_quote(name)
+            name = '%s.zip' % name; tempzipname = ''
+            zipname = os.path.join(mybuilds, name)
+            try:
 				zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w')
 			except:
 				try:
@@ -1703,13 +1720,13 @@ def backUpOptions(type, name=""):
 	elif type == "build":
 		if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Are you sure you wish to backup the current build?[/COLOR]" % COLOR2, nolabel="[B][COLOR red]Cancel Backup[/COLOR][/B]", yeslabel="[B][COLOR springgreen]Backup Build[/COLOR][/B]"):
 			if name == "":
-				name = getKeyboard("","Please enter a name for the %s zip" % type)
-				if not name: return False
-				name = name.replace('\\', '').replace('/', '').replace(':', '').replace('*', '').replace('?', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '')
-			name = urllib.quote_plus(name); tempzipname = ''
-			zipname = os.path.join(mybuilds, '%s.zip' % name)
-			for_progress  = 0
-			ITEM          = []
+                name = getKeyboard("","Please enter a name for the %s zip" % type)
+                if not name: return False
+                name = name.replace('\\', '').replace('/', '').replace(':', '').replace('*', '').replace('?', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '')
+            name = url_quote(name); tempzipname = ''
+            zipname = os.path.join(mybuilds, '%s.zip' % name)
+            for_progress  = 0
+            ITEM          = []
 			if not DIALOG.yesno(ADDONTITLE, "[COLOR %s]Do you want to include your addon_data folder?" % COLOR2, 'This contains [COLOR %s]ALL[/COLOR] addon settings including passwords but may also contain important information such as skin shortcuts. We recommend [COLOR %s]MANUALLY[/COLOR] removing the addon_data folders that aren\'t required.' % (COLOR1, COLOR1), '[COLOR %s]%s[/COLOR] addon_data is ignored[/COLOR]' % (COLOR1, ADDON_ID), yeslabel='[B][COLOR springgreen]Include data[/COLOR][/B]',nolabel='[B][COLOR red]Don\'t Include[/COLOR][/B]'):
 				exclude_dirs.append('addon_data')
 			convertSpecial(HOME, True)
@@ -1852,13 +1869,13 @@ def backUpOptions(type, name=""):
 		if name == "":
 			guiname = getKeyboard("","Please enter a name for the %s zip" % type)
 			if not guiname: return False
-			convertSpecial(USERDATA, True)
-			asciiCheck(USERDATA, True)
-		else: guiname = name
-		guiname = urllib.quote_plus(guiname); tempguizipname = ''
-		guizipname = xbmc.translatePath(os.path.join(mybuilds, '%s_guisettings.zip' % guiname))
-		if os.path.exists(GUISETTINGS):
-			try:
+            convertSpecial(USERDATA, True)
+            asciiCheck(USERDATA, True)
+        else: guiname = name
+        guiname = url_quote(guiname); tempguizipname = ''
+        guizipname = xbmc.translatePath(os.path.join(mybuilds, '%s_guisettings.zip' % guiname))
+        if os.path.exists(GUISETTINGS):
+            try:
 				zipf = zipfile.ZipFile(guizipname, mode='w')
 			except:
 				try:
@@ -1910,13 +1927,13 @@ def backUpOptions(type, name=""):
 	elif type == "theme":
 		if not DIALOG.yesno('[COLOR %s]%s[/COLOR][COLOR %s]: Theme Backup[/COLOR]' % (COLOR1, ADDONTITLE, COLOR2), "[COLOR %s]Would you like to create a theme backup?[/COLOR]" % COLOR2, yeslabel="[B][COLOR springgreen]Continue[/COLOR][/B]", nolabel="[B][COLOR red]No Cancel[/COLOR][/B]"): LogNotify("Theme Backup", "Cancelled!"); return False
 		if name == "":
-			themename = getKeyboard("","Please enter a name for the %s zip" % type)
-			if not themename: return False
-		else: themename = name
-		themename = urllib.quote_plus(themename); tempzipname = ''
-		zipname = os.path.join(mybuilds, '%s.zip' % themename)
-		try:
-			zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w')
+            themename = getKeyboard("","Please enter a name for the %s zip" % type)
+            if not themename: return False
+        else: themename = name
+        themename = url_quote(themename); tempzipname = ''
+        zipname = os.path.join(mybuilds, '%s.zip' % themename)
+        try:
+            zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w')
 		except:
 			try:
 				tempzipname = os.path.join(PACKAGES, '%s.zip' % themename)
@@ -2062,13 +2079,13 @@ def backUpOptions(type, name=""):
 		DIALOG.ok(ADDONTITLE, "[COLOR %s]%s[/COLOR][COLOR %s] theme zip successful:[/COLOR]" % (COLOR1, themename, COLOR2), "[COLOR %s]%s[/COLOR]" % (COLOR1, zipname))
 	elif type == "addondata":
 		if DIALOG.yesno(ADDONTITLE, "[COLOR %s]Are you sure you wish to backup the current addon_data?[/COLOR]" % COLOR2, nolabel="[B][COLOR red]Cancel Backup[/COLOR][/B]", yeslabel="[B][COLOR springgreen]Backup Addon_Data[/COLOR][/B]"):
-			if name == "":
-				name = getKeyboard("","Please enter a name for the %s zip" % type)
-				if not name: return False
-				name = urllib.quote_plus(name)
-			name = '%s_addondata.zip' % name; tempzipname = ''
-			zipname = os.path.join(mybuilds, name)
-			try:
+            if name == "":
+                name = getKeyboard("","Please enter a name for the %s zip" % type)
+                if not name: return False
+                name = url_quote(name)
+            name = '%s_addondata.zip' % name; tempzipname = ''
+            zipname = os.path.join(mybuilds, name)
+            try:
 				zipf = zipfile.ZipFile(xbmc.translatePath(zipname), mode='w')
 			except:
 				try:
@@ -2907,21 +2924,21 @@ def net_info():
 			log("{0} sleep {1}".format(info, str(y)))
 			xbmc.sleep(200)
 		data.append(temp)
-		x += 1
-	try:
-		url = 'http://extreme-ip-lookup.com/json/'
-		req = urllib.request.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-		response = urllib.request.urlopen(req)
-		geo = json.load(response)
-	except:
-		url = 'http://ip-api.com/json'
-		req = urllib.request.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-		response = urllib.request.urlopen(req)
-		geo = json.load(response)
-	mac = data[1]
-	inter_ip = data[0]
+        x += 1
+    try:
+        url = 'http://extreme-ip-lookup.com/json/'
+        req = urlrequest(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        response = urlopen(req)
+        geo = json.load(response)
+    except:
+        url = 'http://ip-api.com/json'
+        req = urlrequest(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        response = urlopen(req)
+        geo = json.load(response)
+    mac = data[1]
+    inter_ip = data[0]
 	ip = geo['query']
 	isp = geo['org']
 	city = geo['city']

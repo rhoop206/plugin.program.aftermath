@@ -29,9 +29,17 @@ import glob
 import shutil
 
 try:
-    import urllib.parse as urlparse
+    from urllib.parse import quote_plus as url_quote
+    from urllib.parse import unquote_plus as url_unquote
+    from urllib.parse import urljoin as urljoin
+    from urllib.request import urlretrieve as urlretrieve
+    xbmc.log(msg='Aftermath Wizard:  Using Python 3 urrlib', level=xbmc.LOGDEBUG)
 except:
-    import urllib as urlparse
+    from urllib import quote_plus as url_quote
+    from urllib import unquote_plus as url_unquote
+    from urlparse import urljoin as urljoin
+    from urllib import urlretrieve as urlretrieve
+    xbmc.log(msg='Aftermath Wizard:  Using Python 2 urrlib', level=xbmc.LOGDEBUG)
 
 import re
 import fnmatch
@@ -145,9 +153,9 @@ THREEDAYS        = TODAY + timedelta(days=3)
 
 KODIV            = float(xbmc.getInfoLabel("System.BuildVersion")[:4])
 if KODIV > 17:
-	from resources.libs import zfile as zipfile
+    from resources.libs import zfile as zipfile
 else:
-	import zipfile
+    import zipfile
 
 MCNAME           = wiz.mediaCenter()
 EXCLUDES         = uservar.EXCLUDES
@@ -441,7 +449,7 @@ def apkScraper(name=""):
                     name2 = tempname[2]
                     v2 = ''
                 title = "[COLOR %s]%s v%s%s %s[/COLOR] [COLOR %s]%s[/COLOR] [COLOR %s]%s[/COLOR]" % (COLOR1, tempname[0].title(), tempname[1], v2.upper(), name2, COLOR2, size.replace(' ', ''), COLOR1, date)
-                download = urlparse.urljoin(kodiurl1, url)
+                download = urljoin(kodiurl1, url)
                 addFile(title, 'apkinstall', "%s v%s%s %s" % (tempname[0].title(), tempname[1], v2.upper(), name2), download)
                 x += 1
             except:
@@ -454,7 +462,7 @@ def apkScraper(name=""):
             try:
                 tempname = name.split('-')
                 title = "[COLOR %s]%s v%s %s[/COLOR] [COLOR %s]%s[/COLOR] [COLOR %s]%s[/COLOR]" % (COLOR1, tempname[0].title(), tempname[1], tempname[2], COLOR2, size.replace(' ', ''), COLOR1, date)
-                download = urlparse.urljoin(kodiurl2, url)
+                download = urljoin(kodiurl2, url)
                 addFile(title, 'apkinstall', "%s v%s %s" % (tempname[0].title(), tempname[1], tempname[2]), download)
                 x += 1
             except:
@@ -960,7 +968,7 @@ def runSpeedTest():
         if not os.path.exists(SPEEDTESTFOLD): os.makedirs(SPEEDTESTFOLD)
         urlsplits = found[0].split('/')
         dest = os.path.join(SPEEDTESTFOLD, urlsplits[-1])
-        urllib.request.urlretrieve(found[0], dest)
+        urlretrieve(found[0], dest)
         viewSpeedTest(urlsplits[-1])
     except:
         wiz.log("[Speed Test] Error Running Speed Test")
@@ -1739,11 +1747,11 @@ def romInstaller(name, url):
 ###########################
 
 def createMenu(type, add, name):
-    if   type == 'saveaddon':
+    if type == 'saveaddon':
         menu_items=[]
-        add2  = urlparse.quote_plus(add.lower().replace(' ', ''))
+        add2 = url_quote(add.lower().replace(' ', ''))
         add3  = add.replace('Debrid', 'Real Debrid')
-        name2 = urlparse.quote_plus(name.lower().replace(' ', ''))
+        name2 = url_quote(name.lower().replace(' ', ''))
         name = name.replace('url', 'URL Resolver')
         menu_items.append((THEME2 % name.title(),             ' '))
         menu_items.append((THEME3 % 'Save %s Data' % add3,               'RunPlugin(plugin://%s/?mode=save%s&name=%s)' %    (ADDON_ID, add2, name2)))
@@ -1751,9 +1759,9 @@ def createMenu(type, add, name):
         menu_items.append((THEME3 % 'Clear %s Data' % add3,              'RunPlugin(plugin://%s/?mode=clear%s&name=%s)' %   (ADDON_ID, add2, name2)))
     elif type == 'save'    :
         menu_items=[]
-        add2  = urlparse.quote_plus(add.lower().replace(' ', ''))
+        add2 = url_quote(add.lower().replace(' ', ''))
         add3  = add.replace('Debrid', 'Real Debrid')
-        name2 = urlparse.quote_plus(name.lower().replace(' ', ''))
+        name2 = url_quote(name.lower().replace(' ', ''))
         name = name.replace('url', 'URL Resolver')
         menu_items.append((THEME2 % name.title(),             ' '))
         menu_items.append((THEME3 % 'Register %s' % add3,                'RunPlugin(plugin://%s/?mode=auth%s&name=%s)' %    (ADDON_ID, add2, name2)))
@@ -1763,7 +1771,7 @@ def createMenu(type, add, name):
         menu_items.append((THEME3 % 'Clear Addon %s Data' % add3,        'RunPlugin(plugin://%s/?mode=addon%s&name=%s)' %   (ADDON_ID, add2, name2)))
     elif type == 'install'  :
         menu_items=[]
-        name2 = urlparse.quote_plus(name)
+        name2 = url_quote(name)
         menu_items.append((THEME2 % name,                                'RunAddon(%s, ?mode=viewbuild&name=%s)'  % (ADDON_ID, name2)))
         menu_items.append((THEME3 % 'Fresh Install',                     'RunPlugin(plugin://%s/?mode=install&name=%s&url=fresh)'  % (ADDON_ID, name2)))
         menu_items.append((THEME3 % 'Normal Install',                    'RunPlugin(plugin://%s/?mode=install&name=%s&url=normal)' % (ADDON_ID, name2)))
@@ -2440,9 +2448,9 @@ def testfirstRun():
 
 def addDir(display, mode=None, name=None, url=None, menu=None, description=ADDONTITLE, overwrite=True, fanart=FANART, icon=ICON, themeit=None):
     u = sys.argv[0]
-    if not mode == None: u += "?mode=%s" % urlparse.quote_plus(mode)
-    if not name == None: u += "&name="+urlparse.quote_plus(name)
-    if not url == None: u += "&url="+urlparse.quote_plus(url)
+    if mode is not None: u += "?mode=%s" % url_quote(mode)
+    if name is not None: u += "&name=" + url_quote(name)
+    if url is not None: u += "&url=" + url_quote(url)
     ok=True
     if themeit: display = themeit % display
     liz=xbmcgui.ListItem(display, iconImage="DefaultFolder.png", thumbnailImage=icon)
@@ -2454,9 +2462,9 @@ def addDir(display, mode=None, name=None, url=None, menu=None, description=ADDON
 
 def addFile(display, mode=None, name=None, url=None, menu=None, description=ADDONTITLE, overwrite=True, fanart=FANART, icon=ICON, themeit=None):
     u = sys.argv[0]
-    if not mode == None: u += "?mode=%s" % urlparse.quote_plus(mode)
-    if not name == None: u += "&name="+urlparse.quote_plus(name)
-    if not url == None: u += "&url="+urlparse.quote_plus(url)
+    if not mode == None: u += "?mode=%s" % url_quote(mode)
+    if not name == None: u += "&name=" + url_quote(name)
+    if not url == None: u += "&url=" + url_quote(url)
     ok=True
     if themeit: display = themeit % display
     liz=xbmcgui.ListItem(display, iconImage="DefaultFolder.png", thumbnailImage=icon)
@@ -2498,11 +2506,11 @@ url=None
 name=None
 mode=None
 
-try:     mode=urlparse.unquote_plus(params["mode"])
+try:     mode=url_unquote(params["mode"])
 except:  pass
-try:     name=urlparse.unquote_plus(params["name"])
+try:     name=url_unquote(params["name"])
 except:  pass
-try:     url=urlparse.unquote_plus(params["url"])
+try:     url=url_unquote(params["url"])
 except:  pass
 
 wiz.log('[ Version : \'%s\' ] [ Mode : \'%s\' ] [ Name : \'%s\' ] [ Url : \'%s\' ]' % (VERSION, mode if not mode == '' else None, name, url))
