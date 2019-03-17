@@ -1066,12 +1066,12 @@ def systemInfo():
             temp = wiz.getInfo(info); y += 1; wiz.log("%s sleep %s" % (info, str(y))); xbmc.sleep(200)
         data.append(temp)
         x += 1
-    storage_free  = data[8] if 'Una' in data[8] else wiz.convertSize(int(float(data[8][:-8]))*1024*1024)
-    storage_used  = data[9] if 'Una' in data[9] else wiz.convertSize(int(float(data[9][:-8]))*1024*1024)
-    storage_total = data[10] if 'Una' in data[10] else wiz.convertSize(int(float(data[10][:-8]))*1024*1024)
-    ram_free      = wiz.convertSize(int(float(data[11][:-2]))*1024*1024)
-    ram_used      = wiz.convertSize(int(float(data[12][:-2]))*1024*1024)
-    ram_total     = wiz.convertSize(int(float(data[13][:-2]))*1024*1024)
+    storage_free  = data[8] if 'Una' in data[8] else tools.convert_size(int(float(data[8][:-8]))*1024*1024)
+    storage_used  = data[9] if 'Una' in data[9] else tools.convert_size(int(float(data[9][:-8]))*1024*1024)
+    storage_total = data[10] if 'Una' in data[10] else tools.convert_size(int(float(data[10][:-8]))*1024*1024)
+    ram_free      = tools.convert_size(int(float(data[11][:-2]))*1024*1024)
+    ram_used      = tools.convert_size(int(float(data[12][:-2]))*1024*1024)
+    ram_total     = tools.convert_size(int(float(data[13][:-2]))*1024*1024)
 
     picture = []; music = []; video = []; programs = []; repos = []; scripts = []; skins = []
 
@@ -1746,39 +1746,41 @@ def romInstaller(name, url):
 ###### Misc Functions######
 ###########################
 
+
 def createMenu(type, add, name):
     if type == 'saveaddon':
-        menu_items=[]
+        menu_items = []
         add2 = url_quote(add.lower().replace(' ', ''))
-        add3  = add.replace('Debrid', 'Real Debrid')
+        add3 = add.replace('Debrid', 'Real Debrid')
         name2 = url_quote(name.lower().replace(' ', ''))
         name = name.replace('url', 'URL Resolver')
         menu_items.append((THEME2 % name.title(),             ' '))
-        menu_items.append((THEME3 % 'Save %s Data' % add3,               'RunPlugin(plugin://%s/?mode=save%s&name=%s)' %    (ADDON_ID, add2, name2)))
-        menu_items.append((THEME3 % 'Restore %s Data' % add3,            'RunPlugin(plugin://%s/?mode=restore%s&name=%s)' % (ADDON_ID, add2, name2)))
-        menu_items.append((THEME3 % 'Clear %s Data' % add3,              'RunPlugin(plugin://%s/?mode=clear%s&name=%s)' %   (ADDON_ID, add2, name2)))
-    elif type == 'save'    :
-        menu_items=[]
+        menu_items.append((THEME3 % 'Save {0} Data'.format(add3), 'RunPlugin(plugin://{0}/?mode=save{1}&name={2})'.format(ADDON_ID, add2, name2)))
+        menu_items.append((THEME3 % 'Restore {0} Data'.format(add3), 'RunPlugin(plugin://{0}/?mode=restore{1}&name={2})'.format(ADDON_ID, add2, name2)))
+        menu_items.append((THEME3 % 'Clear {0} Data'.format(add3), 'RunPlugin(plugin://{0}/?mode=clear{1}&name={2})'.format(ADDON_ID, add2, name2)))
+    elif type == 'save':
+        menu_items = []
         add2 = url_quote(add.lower().replace(' ', ''))
-        add3  = add.replace('Debrid', 'Real Debrid')
+        add3 = add.replace('Debrid', 'Real Debrid')
         name2 = url_quote(name.lower().replace(' ', ''))
         name = name.replace('url', 'URL Resolver')
-        menu_items.append((THEME2 % name.title(),             ' '))
-        menu_items.append((THEME3 % 'Register %s' % add3,                'RunPlugin(plugin://%s/?mode=auth%s&name=%s)' %    (ADDON_ID, add2, name2)))
-        menu_items.append((THEME3 % 'Save %s Data' % add3,               'RunPlugin(plugin://%s/?mode=save%s&name=%s)' %    (ADDON_ID, add2, name2)))
-        menu_items.append((THEME3 % 'Restore %s Data' % add3,            'RunPlugin(plugin://%s/?mode=restore%s&name=%s)' % (ADDON_ID, add2, name2)))
-        menu_items.append((THEME3 % 'Import %s Data' % add3,             'RunPlugin(plugin://%s/?mode=import%s&name=%s)' %  (ADDON_ID, add2, name2)))
-        menu_items.append((THEME3 % 'Clear Addon %s Data' % add3,        'RunPlugin(plugin://%s/?mode=addon%s&name=%s)' %   (ADDON_ID, add2, name2)))
-    elif type == 'install'  :
-        menu_items=[]
+        menu_items.append((THEME2 % name.title(), ' '))
+        menu_items.append((THEME3 % 'Register {0}'.format(add3), 'RunPlugin(plugin://{0}/?mode=auth{1}&name={2})'.format(ADDON_ID, add2, name2)))
+        menu_items.append((THEME3 % 'Save {0} Data'.format(add3), 'RunPlugin(plugin://{0}/?mode=save{1}&name={2})'.format(ADDON_ID, add2, name2)))
+        menu_items.append((THEME3 % 'Restore {0} Data'.format(add3), 'RunPlugin(plugin://{0}/?mode=restore{1}&name={2})'.format(ADDON_ID, add2, name2)))
+        menu_items.append((THEME3 % 'Import {0} Data'.format(add3), 'RunPlugin(plugin://{0}/?mode=import{1}&name={2})'.format(ADDON_ID, add2, name2)))
+        menu_items.append((THEME3 % 'Clear Addon {0} Data'.format(add3), 'RunPlugin(plugin://{0}/?mode=addon{1}&name={2})'.format(ADDON_ID, add2, name2)))
+    elif type == 'install':
+        menu_items = []
         name2 = url_quote(name)
-        menu_items.append((THEME2 % name,                                'RunAddon(%s, ?mode=viewbuild&name=%s)'  % (ADDON_ID, name2)))
-        menu_items.append((THEME3 % 'Fresh Install',                     'RunPlugin(plugin://%s/?mode=install&name=%s&url=fresh)'  % (ADDON_ID, name2)))
-        menu_items.append((THEME3 % 'Normal Install',                    'RunPlugin(plugin://%s/?mode=install&name=%s&url=normal)' % (ADDON_ID, name2)))
-        menu_items.append((THEME3 % 'Apply guiFix',                      'RunPlugin(plugin://%s/?mode=install&name=%s&url=gui)'    % (ADDON_ID, name2)))
-        menu_items.append((THEME3 % 'Build Information',                 'RunPlugin(plugin://%s/?mode=buildinfo&name=%s)'  % (ADDON_ID, name2)))
-    menu_items.append((THEME2 % '%s Settings' % ADDONTITLE,              'RunPlugin(plugin://%s/?mode=settings)' % ADDON_ID))
+        menu_items.append((THEME2 % name, 'RunAddon({0}, ?mode=viewbuild&name={1})'.format(ADDON_ID, name2)))
+        menu_items.append((THEME3 % 'Fresh Install', 'RunPlugin(plugin://{0}/?mode=install&name={1}&url=fresh)'.format(ADDON_ID, name2)))
+        menu_items.append((THEME3 % 'Normal Install', 'RunPlugin(plugin://{0}/?mode=install&name={1}&url=normal)'.format(ADDON_ID, name2)))
+        menu_items.append((THEME3 % 'Apply guiFix', 'RunPlugin(plugin://{0}/?mode=install&name={1}&url=gui)'.format(ADDON_ID, name2)))
+        menu_items.append((THEME3 % 'Build Information', 'RunPlugin(plugin://{0}/?mode=buildinfo&name={1})'.format(ADDON_ID, name2)))
+    menu_items.append((THEME2 % '{0} Settings'.format(ADDONTITLE), 'RunPlugin(plugin://%s/?mode=settings)'.format(ADDON_ID)))
     return menu_items
+
 
 def toggleCache(state):
     cachelist = ['includevideo', 'includeall', 'includeexodusredux', 'includegaia', 'includeovereasy', 'includeplacenta', 'includescrubs', 'includeseren', 'includeyoda']
@@ -1796,6 +1798,7 @@ def toggleCache(state):
         else:
             new = 'true' if wiz.getS(state) == 'false' else 'false'
             wiz.setS(state, new)
+
 
 def playVideo(url):
     if 'watch?v=' in url:
@@ -1820,47 +1823,57 @@ def playVideo(url):
     if xbmc.Player().isPlayingVideo() == 0:
         yt.PlayVideo(url)
 
+# TODO: Extractc to utility class
 def viewLogFile():
     mainlog = wiz.Grab_Log(True)
-    oldlog  = wiz.Grab_Log(True, True)
-    which = 0; logtype = mainlog
-    if not oldlog == False and not mainlog == False:
+    oldlog = wiz.Grab_Log(True, True)
+    which = 0
+    logtype = mainlog
+    if oldlog and mainlog:
         which = DIALOG.select(ADDONTITLE, ["View %s" % mainlog.replace(LOG, ""), "View %s" % oldlog.replace(LOG, "")])
-        if which == -1: wiz.LogNotify('[COLOR %s]View Log[/COLOR]' % COLOR1, '[COLOR %s]View Log Cancelled![/COLOR]' % COLOR2); return
-    elif mainlog == False and oldlog == False:
+        if which == -1:
+            wiz.LogNotify('[COLOR %s]View Log[/COLOR]' % COLOR1, '[COLOR %s]View Log Cancelled![/COLOR]' % COLOR2)
+            return
+    elif not mainlog and not oldlog:
         wiz.LogNotify('[COLOR %s]View Log[/COLOR]' % COLOR1, '[COLOR %s]No Log File Found![/COLOR]' % COLOR2)
         return
-    elif not mainlog == False: which = 0
-    elif not oldlog == False: which = 1
+    elif mainlog:
+        which = 0
+    elif oldlog:
+        which = 1
 
     logtype = mainlog if which == 0 else oldlog
-    msg     = wiz.Grab_Log(False) if which == 0 else wiz.Grab_Log(False, True)
+    msg = wiz.Grab_Log(False) if which == 0 else wiz.Grab_Log(False, True)
 
     wiz.TextBox("%s - %s" % (ADDONTITLE, logtype), msg)
 
+# TODO: Extractc to utility class
 def errorList(file):
     errors = []
-    a=open(file).read()
-    b=a.replace('\n','[CR]').replace('\r','')
+    a = open(file).read()
+    b = a.replace('\n', '[CR]').replace('\r', '')
     match = re.compile("-->Python callback/script returned the following error<--(.+?)-->End of Python script error report<--").findall(b)
     for item in match:
         errors.append(item)
     return errors
 
+
 def errorChecking(log=None, count=None, last=None):
-    errors = []; error1 = []; error2 = [];
-    if log == None:
+    errors = []
+    error1 = []
+    error2 = []
+    if log is None:
         curr = wiz.Grab_Log(True, False)
         old = wiz.Grab_Log(True, True)
-        if old == False and curr == False:
-            if count == None:
+        if not old and not curr:
+            if count is None:
                 wiz.LogNotify('[COLOR %s]View Error Log[/COLOR]' % COLOR1, '[COLOR %s]No Log File Found![/COLOR]' % COLOR2)
                 return
             else:
                 return 0
-        if not curr == False:
+        if curr:
             error1 = errorList(curr)
-        if not old == False:
+        if old:
             error2 = errorList(old)
         if len(error2) > 0:
             for item in error2: errors = [item] + errors
@@ -1870,11 +1883,12 @@ def errorChecking(log=None, count=None, last=None):
         error1 = errorList(log)
         if len(error1) > 0:
             for item in error1: errors = [item] + errors
-    if not count == None:
+    if count is not None:
         return len(errors)
     elif len(errors) > 0:
-        if last == None:
-            i = 0; string = ''
+        if last is None:
+            i = 0
+            string = ''
             for item in errors:
                 i += 1
                 string += "[B][COLOR red]ERROR NUMBER %s:[/B][/COLOR]%s\n" % (str(i), item.replace(HOME, '/').replace('                                        ', ''))
@@ -1898,6 +1912,8 @@ ACTION_BACKSPACE                = 110   ## ?
 ACTION_MOUSE_LEFT_CLICK         = 100
 ACTION_MOUSE_LONG_CLICK         = 108
 
+
+# TODO: Extract out to utility class
 def LogViewer(default=None):
     class LogViewer(xbmcgui.WindowXMLDialog):
         def __init__(self,*args,**kwargs):
@@ -1924,12 +1940,15 @@ def LogViewer(default=None):
             self.setFocusId(self.scrollbar)
 
         def onClick(self, controlId):
-            if   controlId == self.okbutton: self.close()
-            elif controlId == self.upload: self.close(); uploadLog.Main()
+            if  controlId == self.okbutton:
+                self.close()
+            elif controlId == self.upload:
+                self.close()
+                uploadLog.Main()
             elif controlId == self.kodi:
                 newmsg = wiz.Grab_Log(False)
                 filename = wiz.Grab_Log(True)
-                if newmsg == False:
+                if not newmsg:
                     self.titlemsg = "%s: View Log Error" % ADDONTITLE
                     self.getControl(self.msg).setText("Log File Does Not Exists!")
                 else:
@@ -1940,7 +1959,7 @@ def LogViewer(default=None):
             elif controlId == self.kodiold:
                 newmsg = wiz.Grab_Log(False, True)
                 filename = wiz.Grab_Log(True, True)
-                if newmsg == False:
+                if not newmsg:
                     self.titlemsg = "%s: View Log Error" % ADDONTITLE
                     self.getControl(self.msg).setText("Log File Does Not Exists!")
                 else:
@@ -1951,7 +1970,7 @@ def LogViewer(default=None):
             elif controlId == self.wizard:
                 newmsg = wiz.Grab_Log(False, False, True)
                 filename = wiz.Grab_Log(True, False, True)
-                if newmsg == False:
+                if not newmsg:
                     self.titlemsg = "%s: View Log Error" % ADDONTITLE
                     self.getControl(self.msg).setText("Log File Does Not Exists!")
                 else:
@@ -1961,15 +1980,18 @@ def LogViewer(default=None):
                     self.setFocusId(self.scrollbar)
 
         def onAction(self, action):
-            if   action == ACTION_PREVIOUS_MENU: self.close()
-            elif action == ACTION_NAV_BACK: self.close()
-    if default == None: default = wiz.Grab_Log(True)
-    lv = LogViewer( "LogViewer.xml" , ADDON.getAddonInfo('path'), 'DefaultSkin', default=default)
+            if action == ACTION_PREVIOUS_MENU:
+                self.close()
+            elif action == ACTION_NAV_BACK:
+                self.close()
+    if default is None:
+        default = wiz.Grab_Log(True)
+    lv = LogViewer("LogViewer.xml", ADDON.getAddonInfo('path'), 'DefaultSkin', default=default)
     lv.doModal()
     del lv
 
 def removeAddon(addon, name, over=False):
-    if not over == False:
+    if over:
         yes = 1
     else:
         yes = DIALOG.yesno(ADDONTITLE, '[COLOR %s]Are you sure you want to delete the addon:'% COLOR2, 'Name: [COLOR %s]%s[/COLOR]' % (COLOR1, name), 'ID: [COLOR %s]%s[/COLOR][/COLOR]' % (COLOR1, addon), yeslabel='[B][COLOR springgreen]Remove Addon[/COLOR][/B]', nolabel='[B][COLOR red]Don\'t Remove[/COLOR][/B]')
@@ -1978,11 +2000,12 @@ def removeAddon(addon, name, over=False):
         wiz.log("Removing Addon %s" % addon)
         wiz.cleanHouse(folder)
         xbmc.sleep(200)
-        try: shutil.rmtree(folder)
+        try:
+            shutil.rmtree(folder)
         except:
             wiz.log("Error removing %s" % addon, xbmc.LOGNOTICE)
         removeAddonData(addon, name, over)
-    if over == False:
+    if not over:
         wiz.LogNotify("[COLOR %s]%s[/COLOR]" % (COLOR1, ADDONTITLE), "[COLOR %s]%s Removed[/COLOR]" % (COLOR2, name))
 
 def removeAddonData(addon, name=None, over=False):
@@ -2055,8 +2078,8 @@ def buildInfo(name):
                     themecount = wiz.themeCount(name, False)
                     msg += "[COLOR %s]Build Theme(s):[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, ', '.join(themecount))
                 msg += "[COLOR %s]Kodi Version:[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, kodi)
-                msg += "[COLOR %s]Extracted Size:[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, wiz.convertSize(int(float(extracted))))
-                msg += "[COLOR %s]Zip Size:[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, wiz.convertSize(int(float(zipsize))))
+                msg += "[COLOR %s]Extracted Size:[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, tools.convert_size(int(float(extracted))))
+                msg += "[COLOR %s]Zip Size:[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, tools.convert_size(int(float(zipsize))))
                 msg += "[COLOR %s]Skin Name:[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, skin)
                 msg += "[COLOR %s]Adult Content:[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, adult)
                 msg += "[COLOR %s]Description:[/COLOR] [COLOR %s]%s[/COLOR][CR][CR]" % (COLOR2, COLOR1, description)
@@ -2319,7 +2342,7 @@ def freshStart(install=None, over=False):
                             wiz.log("-> %s" % (str(e)), xbmc.LOGNOTICE)
                             wiz.purgeDb(os.path.join(root,name))
                 else:
-                    DP.update(int(wiz.percentage(del_file, total_files)), '', '[COLOR %s]File: [/COLOR][COLOR %s]%s[/COLOR]' % (COLOR2, COLOR1, name), '')
+                    DP.update(int(tools.percentage(del_file, total_files)), '', '[COLOR %s]File: [/COLOR][COLOR %s]%s[/COLOR]' % (COLOR2, COLOR1, name), '')
                     try: os.remove(os.path.join(root,name))
                     except Exception as e:
                         wiz.log("Error removing %s" % os.path.join(root, name), xbmc.LOGNOTICE)
@@ -2385,19 +2408,28 @@ def clearThumb(type=None):
         os.path.join(ADDOND, 'script.extendedinfo', 'images')}
     
     latest = wiz.latestDB('Textures')
-    if not type == None: choice = 1
-    else: choice = DIALOG.yesno(ADDONTITLE, '[COLOR %s]Would you like to delete the %s and related thumbnail folders?' % (COLOR2, latest), "They will repopulate on the next startup[/COLOR]", nolabel='[B][COLOR red]Don\'t Delete[/COLOR][/B]', yeslabel='[B][COLOR springgreen]Delete Thumbs[/COLOR][/B]')
+    if type is not None:
+        choice = 1
+    else:
+        choice = DIALOG.yesno(ADDONTITLE, '[COLOR %s]Would you like to delete the %s and related thumbnail folders?' % (COLOR2, latest), "They will repopulate on the next startup[/COLOR]", nolabel='[B][COLOR red]Don\'t Delete[/COLOR][/B]', yeslabel='[B][COLOR springgreen]Delete Thumbs[/COLOR][/B]')
     if choice == 1:
-        try: wiz.removeFile(os.join(DATABASE, latest))
-        except: wiz.log('Failed to delete, Purging DB.'); wiz.purgeDb(latest)
+        try:
+            wiz.removeFile(os.path.join(DATABASE, latest))
+        except:
+            wiz.log('Failed to delete, Purging DB.')
+            wiz.purgeDb(latest)
         for i in thumb_locations:
             wiz.removeFolder(i)
         #if not type == 'total': wiz.killxbmc()
-    else: wiz.log('Clear thumbnames cancelled')
+    else:
+        wiz.log('Clear thumbnames cancelled')
     wiz.redoThumbs()
 
+
+# TODO: Fix me, unresolved reference on 'purge'
 def purgeDb():
-    DB = []; display = []
+    DB = []
+    display = []
     for dirpath, dirnames, files in os.walk(HOME):
         for f in fnmatch.filter(files, '*.db'):
             if f != 'Thumbs.db':
@@ -2407,14 +2439,19 @@ def purgeDb():
                 display.append('(%s) %s' % (dir[len(dir)-2], dir[len(dir)-1]))
     if KODIV >= 16:
         choice = DIALOG.multiselect("[COLOR %s]Select DB File to Purge[/COLOR]" % COLOR2, display)
-        if choice == None: wiz.LogNotify("[COLOR %s]Purge Database[/COLOR]" % COLOR1, "[COLOR %s]Cancelled[/COLOR]" % COLOR2)
-        elif len(choice) == 0: wiz.LogNotify("[COLOR %s]Purge Database[/COLOR]" % COLOR1, "[COLOR %s]Cancelled[/COLOR]" % COLOR2)
+        if choice is None:
+            wiz.LogNotify("[COLOR %s]Purge Database[/COLOR]" % COLOR1, "[COLOR %s]Cancelled[/COLOR]" % COLOR2)
+        elif len(choice) == 0:
+            wiz.LogNotify("[COLOR %s]Purge Database[/COLOR]" % COLOR1, "[COLOR %s]Cancelled[/COLOR]" % COLOR2)
         else:
-            for purge in choice: wiz.purgeDb(DB[purge])
+            for purge in choice:
+                wiz.purgeDb(DB[purge])
     else:
         choice = DIALOG.select("[COLOR %s]Select DB File to Purge[/COLOR]" % COLOR2, display)
-        if choice == -1: wiz.LogNotify("[COLOR %s]Purge Database[/COLOR]" % COLOR1, "[COLOR %s]Cancelled[/COLOR]" % COLOR2)
-        else: wiz.purgeDb(DB[purge])
+        if choice == -1:
+            wiz.LogNotify("[COLOR %s]Purge Database[/COLOR]" % COLOR1, "[COLOR %s]Cancelled[/COLOR]" % COLOR2)
+        else:
+            wiz.purgeDb(DB[purge])
 
 ##########################
 ### DEVELOPER MENU #######
@@ -2451,13 +2488,15 @@ def addDir(display, mode=None, name=None, url=None, menu=None, description=ADDON
     if mode is not None: u += "?mode=%s" % url_quote(mode)
     if name is not None: u += "&name=" + url_quote(name)
     if url is not None: u += "&url=" + url_quote(url)
-    ok=True
-    if themeit: display = themeit % display
-    liz=xbmcgui.ListItem(display, iconImage="DefaultFolder.png", thumbnailImage=icon)
-    liz.setInfo( type="Video", infoLabels={ "Title": display, "Plot": description} )
-    liz.setProperty( "Fanart_Image", fanart )
-    if not menu == None: liz.addContextMenuItems(menu, replaceItems=overwrite)
-    ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+    ok = True
+    if themeit:
+        display = themeit % display
+    liz = xbmcgui.ListItem(display, iconImage="DefaultFolder.png", thumbnailImage=icon)
+    liz.setInfo(type="Video", infoLabels={ "Title": display, "Plot": description})
+    liz.setProperty("Fanart_Image", fanart)
+    if menu is not None:
+        liz.addContextMenuItems(menu, replaceItems=overwrite)
+    ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
     return ok
 
 def addFile(display, mode=None, name=None, url=None, menu=None, description=ADDONTITLE, overwrite=True, fanart=FANART, icon=ICON, themeit=None):
