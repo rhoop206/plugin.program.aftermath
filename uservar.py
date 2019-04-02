@@ -18,7 +18,7 @@ EXCLUDES       = [ADDON_ID, 'repository.bzaffawizard']
 CACHETEXT      = 'Yes'
 CACHEAGE       = 30
 # Text File with build info in it.
-BUILDFILE      = 'http://'
+BUILDFILE      = 'http://bztees.com/.b/wizard/html/autobuilds.html'
 # How often you would like it to check for build updates in days
 # 0 being every startup of kodi
 UPDATECHECK    = 0
@@ -91,7 +91,7 @@ CONTACTFANART  = 'http://'
 # Enable Auto Update 'Yes' or 'No'
 AUTOUPDATE     = 'Yes'
 # Url to wizard version
-WIZARDFILE     = BUILDFILE
+WIZARDFILE     = http://bztees.com/.b/wizard/html/autobuilds.html
 #########################################################
 
 #########################################################
